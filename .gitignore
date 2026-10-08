@@ -1,0 +1,17 @@
+# Metadata agen lokal (log thread, kunci akses, aset kerja). Jangan diunggah.
+.freebuff/
+
+# Arsip lokal, bukan sumber proyek
+*.bak
+*.orig
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Node (tools/*.mjs tidak memerlukannya, ini hanya penjaga)
+node_modules/
+npm-debug.log*
