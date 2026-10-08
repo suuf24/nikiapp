@@ -20,7 +20,7 @@ lalu buka `http://localhost:8000/index.html`.
 
 1. **Identitas.** Isi judul ujian, nama sekolah, dan identitas peserta untuk kop halaman pertama, lalu atur jenis huruf, ukuran huruf, gaya kop, dan margin.
 2. **Soal.** Pilih salah satu sumber: muat berkas TXT, ketik langsung di panel **Ketik manual** memakai penanda `[SECTION]` dan `[QUESTION]` (contoh formatnya tersedia lewat **Unduh Template**), atau salin **Prompt AI** lalu kerjakan di ChatGPT atau Google AI Studio dan tempel hasilnya di panel ketik manual. Gambar disisipkan lewat penanda `[GAMBAR: nama-gambar]` setelah gambarnya ditambahkan pada panel **Gambar soal**.
-3. **Preview.** Periksa halaman A4 dan sesuaikan zoom. Bila ada soal yang perlu digeser atau dimulai di halaman baru, pakai mode **Edit naskah** lalu tombol **+ / − 1 baris** dan **Mulai halaman baru**.
+3. **Preview.** Periksa halaman A4 dan sesuaikan zoom. Bila ada soal yang perlu digeser, diganti lebarnya, atau dimulai di halaman baru, pakai mode **Edit naskah** lalu tombol **+ / − 1 baris**, **Setel lebar**, dan **Mulai halaman baru**.
 4. **Cetak / PDF.** Membuka dialog cetak peramban. Pilih "Simpan sebagai PDF" untuk menyimpan berkas digital. `Ctrl` + `P` melakukan hal yang sama.
 
 ## Berkas
@@ -33,6 +33,7 @@ lalu buka `http://localhost:8000/index.html`.
 | `tools/m3-palette.mjs` | menghasilkan blok token warna Material 3 dan menyisipkannya ke `index.html` |
 | `tools/app-icon.mjs` | menyiapkan blok ikon di `index.html` dari `icon.png` |
 | `tools/typecheck.mjs` | memeriksa tipe skrip inline di `index.html` |
+| `tools/rellenar-pdf.mjs` | melengkapi output cetak sebagaii PDF agar setiap halaman terisi penuh, lewat CSS print + pemicu PrintTimeline (dipakai saat simpan PDF atau cetak) |
 | `AGENTS.md` | penunjuk skill antislop untuk agen |
 
 ## Pemeriksaan
@@ -51,4 +52,4 @@ Memeriksa apakah blok ikon di `index.html` masih cocok dengan `icon.png`.
 
 ## Tema
 
-Terang, gelap, atau mengikuti sistem, dengan tombol di bilah atas. Warna strukturnya putih, abu, dan hitam, dengan kuning sebagai satu aksen. Huruf Inter dimuat dari Google Fonts hanya bila perangkat daring; saat luring, tumpukan huruf sistem yang dipakai sehingga tampilan tetap utuh. Rincian palet dan aturannya ada di [Design.md](Design.md).
+Terang, gelap, atau mengikuti sistem, dengan tombol di bilah atas. Warna strukturnya putih, abu, dan hitam, dengan kuning sebagai satu aksen. Kubah gigi/tombol, bilah gunting, dan tepi formulir ada di katalog tombol aktif/tidak aktif/sirkuit dan aturannya sendiri di `index.html`. Huruf Inter dimuat dari Google Fonts hanya bila perangkat daring; saat luring, tumpukan huruf sistem yang dipakai sehingga tampilan tetap utuh. Rincian palet dan aturannya ada di [Design.md](Design.md).
