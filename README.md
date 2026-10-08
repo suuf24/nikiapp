@@ -53,3 +53,8 @@ Memeriksa apakah blok ikon di `index.html` masih cocok dengan `icon.png`.
 ## Tema
 
 Terang, gelap, atau mengikuti sistem, dengan tombol di bilah atas. Warna strukturnya putih, abu, dan hitam, dengan kuning sebagai satu aksen. Kubah gigi/tombol, bilah gunting, dan tepi formulir ada di katalog tombol aktif/tidak aktif/sirkuit dan aturannya sendiri di `index.html`. Huruf Inter dimuat dari Google Fonts hanya bila perangkat daring; saat luring, tumpukan huruf sistem yang dipakai sehingga tampilan tetap utuh. Rincian palet dan aturannya ada di [Design.md](Design.md).
+
+Dialog cetak yang disesuaikan per jenis dokumen:
+
+- Naskah ujian / laporan: bilah gunting depan di matikan.
+- SK / surat resmi / Berita Acara: kubah gigi muncul di atas huruf yang dicetak.
