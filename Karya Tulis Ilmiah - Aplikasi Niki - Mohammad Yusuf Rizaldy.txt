@@ -1,0 +1,147 @@
+JUDUL
+
+Pengembangan Aplikasi Web Niki untuk Membantu Guru MI Plus Darul Falah Mojoagung, Jombang, Menyusun Naskah Soal Ujian
+
+Penulis: Mohammad Yusuf Rizaldy
+
+Email: mailtoyusufrizaldy@gmail.com
+
+ABSTRAK
+
+Menyusun naskah soal ujian bukan hanya pekerjaan menulis butir soal, tetapi juga pekerjaan menata tampilan kertas, kop madrasah, identitas peserta, penomoran, dan pemisahan halaman. Pekerjaan tata letak itu harus diulang setiap kali penilaian berlangsung, sehingga waktu yang tersedia untuk memikirkan mutu soal berkurang. Penelitian pengembangan ini menghasilkan aplikasi web bernama Niki yang membantu guru menyusun naskah soal ujian berukuran A4 dalam bentuk berkas siap cetak. Aplikasi dapat dibuka melalui peramban pada alamat https://nikiapp.vercel.app/ tanpa pemasangan, tanpa pendaftaran akun, dan tanpa biaya, serta seluruh isi berkas diproses di peramban pengguna sehingga tidak dikirim ke server mana pun. Pengembangan mengikuti model ADDIE yang meliputi tahap analisis, desain, pengembangan, implementasi, dan evaluasi. Uji coba terbatas dilakukan bersama guru MI Plus Darul Falah Mojoagung, Jombang, dengan angket dan wawancara sebagai instrumen pengumpulan data. Hasil uji coba menunjukkan skor rata-rata [ISI: skor rata-rata angket] dari 5 dengan kategori [ISI: kategori]. Tanggapan guru yang tercatat adalah [ISI: ringkasan tanggapan guru], dan bagian yang masih perlu diperbaiki adalah [ISI: daftar usulan perbaikan]. Aplikasi ini tidak menggantikan kemampuan guru dalam menulis butir soal, melainkan mengambil alih pekerjaan tata letak yang berulang agar penyusunan naskah ujian menjadi lebih cepat dan konsisten.
+
+Kata kunci: aplikasi web, naskah soal ujian, model ADDIE, madrasah ibtidaiyah, penyusunan soal
+
+PENDAHULUAN
+
+Penilaian merupakan bagian yang tidak terpisahkan dari proses pembelajaran. Melalui penilaian, guru mengetahui sejauh mana peserta didik mencapai tujuan pembelajaran, dan hasilnya dipakai untuk memperbaiki kegiatan belajar berikutnya (Arikunto, 2018). Salah satu bentuk penilaian yang paling sering digunakan di madrasah ibtidaiyah adalah penilaian tertulis, baik ulangan harian, penilaian tengah semester, maupun penilaian akhir semester. Setiap bentuk penilaian menuntut guru menyiapkan naskah soal yang lengkap, mulai dari kop, identitas peserta, butir soal, sampai pengaturan tata letak halaman.
+
+Perkembangan teknologi informasi membuka peluang untuk meringankan pekerjaan administratif guru. Safitri, Cahyadi, dan Yaqin (2023) menunjukkan bahwa pemanfaatan teknologi informasi memberi sumbangan nyata pada pengelolaan pendidikan di madrasah, sedangkan Hanifah dkk. (2025) menemukan bahwa guru madrasah ibtidaiyah umumnya sudah memiliki pemahaman dasar tentang teknologi, tetapi masih membutuhkan alat dan pendampingan yang sesuai dengan pekerjaan sehari-hari. Alat yang dibutuhkan tidak selalu berupa aplikasi besar. Alat sederhana yang tepat sasaran lebih mudah dipakai karena tidak menuntut pemasangan, pelatihan panjang, atau langganan berbayar.
+
+Artikel ini melaporkan pengembangan aplikasi web Niki dan uji coba terbatasnya bersama guru MI Plus Darul Falah Mojoagung, Jombang. Aplikasi ini dirancang untuk satu pekerjaan yang spesifik, yaitu menyusun naskah soal ujian berukuran A4 yang siap dicetak dan difotokopi.
+
+LATAR BELAKANG
+
+Penyusunan naskah soal memuat dua jenis pekerjaan yang berbeda. Pekerjaan pertama adalah menulis butir soal, yaitu memilih materi, menyusun rumusan pertanyaan, membuat pilihan jawaban yang masuk akal, dan menjaga tingkat kesulitan agar sesuai. Pekerjaan kedua adalah menata naskah, yaitu mengatur kop madrasah, kolom soal, margin, penomoran, jarak antarbutir, serta memastikan soal tidak terpotong di tengah halaman. Kedua pekerjaan itu menuntut ketelitian dan sering harus selesai dalam waktu yang terbatas.
+
+Penelitian terdahulu menunjukkan bahwa pekerjaan pertama sudah menjadi beban tersendiri bagi guru. Sinta, Roebyanto, dan Nuraini (2022) menemukan bahwa guru sekolah dasar mengalami kesulitan menyusun soal berbasis keterampilan berpikir tingkat tinggi, terutama ketika menentukan kata kerja operasional dan menyusun stimulus soal. Huliatunisa dkk. (2022) juga melaporkan bahwa guru memerlukan contoh dan pendampingan dalam menyusun soal evaluasi matematika berbasis HOTS. Beban bertambah ketika soal yang sudah ditulis harus dipindahkan ke format naskah ujian yang rapi. Simalango (2021) membuktikan hal ini melalui pelatihan bagi guru SMA Maitreyawira Kota Batam, karena sebagian guru masih kewalahan menggunakan aplikasi pengolah kata untuk membuat model soal ujian sehingga pelatihan teknis tetap diperlukan.
+
+Di sisi lain, aplikasi yang tersedia di internet sering kali tidak cocok dengan kebutuhan guru madrasah. Sebagian aplikasi ditujukan untuk ujian daring berlangganan, sebagian memerlukan pemasangan perangkat lunak, dan sebagian hanya menangani satu bagian pekerjaan saja. Tahap analisis kebutuhan pada awal pengembangan ini menunjukkan bahwa guru MI Plus Darul Falah Mojoagung, Jombang, membutuhkan alat yang gratis, ringan, dapat dibuka langsung dari peramban, dan menghasilkan naskah cetak A4 lengkap dengan kop madrasah beserta identitas peserta. Kebutuhan itulah yang mendorong pengembangan aplikasi Niki.
+
+TUJUAN PENELITIAN
+
+Tujuan penelitian ini ada tiga, yaitu (1) mengembangkan aplikasi web Niki yang dapat membantu guru menyusun naskah soal ujian A4 mulai dari pengisian kop dan identitas peserta sampai siap cetak; (2) mengetahui kemudahan penggunaan aplikasi tersebut bagi guru MI Plus Darul Falah Mojoagung, Jombang, melalui uji coba terbatas; dan (3) mengidentifikasi kelebihan serta keterbatasan aplikasi sebagai dasar perbaikan pada pengembangan berikutnya.
+
+MANFAAT PENELITIAN
+
+Secara teoretis, penelitian ini menambah bukti bahwa model ADDIE dapat dipakai untuk menghasilkan alat bantu kerja guru yang sederhana dan sesuai kebutuhan, khususnya pada aspek penyusunan naskah soal. Penelitian ini juga melengkapi kajian tentang pemanfaatan teknologi informasi di madrasah ibtidaiyah, yang selama ini lebih banyak membahas pengelolaan dan sikap guru daripada alat kerja yang mereka pakai setiap hari.
+
+Secara praktis, aplikasi Niki dapat langsung dipakai guru MI Plus Darul Falah Mojoagung, Jombang, untuk menyusun naskah ulangan harian, penilaian tengah semester, dan penilaian akhir semester tanpa biaya. Madrasah memperoleh satu alat kerja yang dapat dipakai bersama dan tidak membebani anggaran, sedangkan pengembang lain dapat mempelajari cara kerja aplikasi ini karena kode sumbernya tersedia terbuka di https://github.com/suuf24/nikiapp.
+
+LANDASAN TEORI
+
+Evaluasi pendidikan adalah proses mengukur dan menilai hasil belajar peserta didik dengan alat ukur yang sahih. Arikunto (2018) menegaskan bahwa alat ukur yang baik harus memenuhi syarat validitas, reliabilitas, daya pembeda, dan tingkat kesukaran yang seimbang. Syarat tersebut tidak berhenti pada tataran teori. Pradita, Megawanti, dan Yulianingsih (2023) menguji soal penilaian tengah semester matematika dan menemukan bahwa rasio tingkat kesukaran butir soal belum proporsional sehingga mutu naskah perlu diperbaiki. Pada tingkat yang lebih mandiri, Fadilah dkk. (2021) mengembangkan bank soal tematik berbasis HOTS untuk sekolah dasar, dan hasilnya dapat dipakai guru sebagai rujukan butir soal yang sudah tersusun baik.
+
+Kesulitan guru dalam menyusun soal sudah banyak dilaporkan. Sinta dkk. (2022) dan Huliatunisa dkk. (2022) mencatat bahwa kendala utama bukan pada penguasaan materi, melainkan pada keterampilan menerjemahkan materi menjadi butir soal yang mengukur proses berpikir dan pada keterbatasan waktu penyusunan. Temuan itu menunjukkan bahwa bantuan yang dibutuhkan guru tidak hanya berupa contoh soal, tetapi juga berupa alat kerja yang mempercepat penyusunan naskah.
+
+Pemanfaatan teknologi informasi di lingkungan madrasah memiliki ciri tersendiri. Safitri dkk. (2023) menemukan bahwa inovasi teknologi menyebar melalui kebiasaan kerja sehari-hari dan dukungan pimpinan, sedangkan Hanifah dkk. (2025) mencatat dua hal yang sering menjadi penghambat, yaitu keterbatasan sarana dan kurangnya pelatihan berkelanjutan. Karena itu, aplikasi yang dipakai guru sebaiknya ringan, tidak menuntut pemasangan, dan dapat dipakai tanpa pelatihan panjang.
+
+Pengembangan aplikasi dalam penelitian ini memakai model ADDIE, yaitu analysis, design, development, implementation, dan evaluation (Branch, 2009). Model ini banyak dipakai dalam penelitian pengembangan di Indonesia karena tahapannya jelas dan berulang, sehingga hasil evaluasi pada satu tahap dapat langsung dipakai untuk memperbaiki produk (Sugiyono, 2019). Muryandari dan Sujatmiko (2025) memakai model yang sama untuk mengembangkan media pembelajaran berbasis web dan melaporkan bahwa kelayakan produk dapat diukur melalui validasi dan uji coba terbatas.
+
+Aplikasi digital untuk mendukung penyusunan soal sudah pernah dikembangkan. Ula dkk. (2025) melaporkan penerapan aplikasi bank soal berbasis TPACK pada siswa sekolah menengah atas. Aplikasi seperti itu menekankan penyediaan kumpulan butir soal, sedangkan kebutuhan yang dijawab penelitian ini berbeda, yaitu penyusunan naskah ujian cetak yang lengkap dengan kop dan identitas peserta. Keduanya saling melengkapi, dan celah itulah yang diisi oleh aplikasi Niki.
+
+METODE PENELITIAN
+
+Penelitian ini termasuk penelitian dan pengembangan, yaitu jenis penelitian yang bertujuan menghasilkan produk tertentu dan menguji kelayakannya. Model pengembangan yang dipakai adalah ADDIE yang terdiri dari lima tahap, yaitu analysis, design, development, implementation, dan evaluation (Branch, 2009). Model ini dipilih karena tahapannya sederhana, mudah diikuti, dan menempatkan tanggapan pengguna sebagai dasar perbaikan.
+
+Tahap analisis dilakukan dengan mengamati pekerjaan guru saat menyusun naskah soal dan mencatat bagian yang paling menyita waktu. Tahap desain menghasilkan rancangan alur kerja tiga langkah, yaitu pengisian identitas dokumen, pemasukan soal, dan pemeriksaan hasil pada pratinjau. Tahap pengembangan menghasilkan aplikasi web satu halaman yang dibangun dengan HTML, CSS, dan JavaScript tanpa langkah build, kemudian diunggah agar dapat dibuka publik pada alamat https://nikiapp.vercel.app/. Tahap implementasi berupa uji coba terbatas bersama guru MI Plus Darul Falah Mojoagung, Jombang. Tahap evaluasi memakai tanggapan guru untuk menetapkan perbaikan yang akan dikerjakan.
+
+Subjek uji coba adalah guru MI Plus Darul Falah Mojoagung, Jombang, sebanyak [ISI: jumlah guru] orang. Instrumen pengumpulan data berupa angket tertutup dengan skala 1 sampai 5 dan pedoman wawancara singkat. Angket memuat empat aspek, yaitu kemudahan penggunaan, kecepatan penyusunan naskah, kerapian tampilan hasil cetak, dan kesesuaian dengan kebutuhan ujian madrasah. Wawancara dipakai untuk mencatat bagian aplikasi yang dirasa membingungkan serta usulan perbaikan dari guru.
+
+Data angket dianalisis dengan menghitung skor rata-rata setiap aspek, mengubahnya menjadi persentase kelayakan, lalu menafsirkannya ke dalam kategori sangat baik, baik, cukup, atau kurang. Data wawancara dianalisis dengan mengelompokkan jawaban guru berdasarkan kemiripan isi. Pola analisis kelayakan seperti ini lazim dipakai pada penelitian pengembangan, misalnya pada Muryandari dan Sujatmiko (2025).
+
+HASIL DAN PEMBAHASAN
+
+Hasil pengembangan berupa aplikasi web bernama Niki yang dapat dibuka pada alamat https://nikiapp.vercel.app/. Aplikasi bekerja dalam tiga langkah yang tersusun berurutan, yaitu Identitas Dokumen, Masukkan Soal, dan Preview Dokumen. Seluruh pekerjaan berlangsung di dalam peramban, isi berkas dibaca di perangkat pengguna dan tidak diunggah ke server mana pun, sehingga tidak ada data madrasah yang keluar dari komputer guru. Aplikasi ini dapat dipakai tanpa akun dan tanpa biaya.
+
+Kemampuan aplikasi yang terbukti berjalan pada saat uji coba adalah sebagai berikut:
+
+a. Kop dokumen memuat logo madrasah (berkas PNG, JPG, atau WEBP, juga dapat berupa tautan gambar), judul ujian, nama sekolah atau madrasah, tahun pelajaran, dan mata pelajaran.
+
+b. Identitas peserta dapat dicetak lengkap dengan kolom kelas, nama, nomor absen, hari atau tanggal, dan waktu.
+
+c. Soal dapat dimasukkan melalui tiga cara, yaitu memuat berkas teks dari perangkat, mengetik langsung memakai penanda [SECTION] dan [QUESTION], atau memakai prompt kecerdasan buatan yang tersedia di dalam aplikasi.
+
+d. Prompt kecerdasan buatan dapat dibuka langsung di ChatGPT atau Google AI Studio karena kotak pesan pada layanan tersebut sudah terisi begitu halaman terbuka, dan hasilnya dikembalikan dalam format penanda yang sama sehingga dapat langsung ditempel di aplikasi.
+
+e. Gambar soal dapat disisipkan melalui penanda [GAMBAR: nama-gambar], sedangkan gambar dari internet dapat dirujuk dengan penanda [GAMBAR: https://...].
+
+f. Jarak antarbutir dan pemisahan halaman diatur dengan penanda [ENTER], [ENTER: 3], [HALAMAN-BARU], atau [NEWPAGE], dan juga dapat diatur dari mode Edit naskah.
+
+g. Ukuran kertas tetap A4, yaitu 210 x 297 mm, dengan margin yang dapat diatur dari 0,5 sampai 5 cm termasuk nilai standar 2,54 cm.
+
+h. Pratinjau menampilkan naskah per halaman dengan pengaturan zoom dan navigasi halaman, sehingga guru dapat memeriksa letak soal sebelum mencetak.
+
+i. Pencetakan dilakukan melalui dialog cetak peramban, dan naskah dapat disimpan sebagai berkas PDF untuk diperbanyak.
+
+j. Tampilan menyediakan pilihan tema terang, gelap, atau mengikuti pengaturan sistem, serta pengaturan jenis huruf, ukuran huruf, dan gaya kop.
+
+Uji coba terbatas melibatkan [ISI: jumlah guru] guru MI Plus Darul Falah Mojoagung, Jombang. Setiap guru menyusun satu naskah soal lengkap dengan kop dan identitas peserta, lalu mengisi angket dan mengikuti wawancara singkat. Rekap hasil angket ditampilkan pada daftar berikut.
+
+a. Kemudahan penggunaan: skor rata-rata [ISI: skor] dari 5, kategori [ISI: kategori].
+
+b. Kecepatan penyusunan naskah: skor rata-rata [ISI: skor] dari 5, kategori [ISI: kategori].
+
+c. Kerapian tampilan hasil cetak: skor rata-rata [ISI: skor] dari 5, kategori [ISI: kategori].
+
+d. Kesesuaian dengan kebutuhan ujian madrasah: skor rata-rata [ISI: skor] dari 5, kategori [ISI: kategori].
+
+e. Skor rata-rata keseluruhan: [ISI: skor] dari 5, atau [ISI: persentase] persen, kategori [ISI: kategori].
+
+Uji coba juga mencatat waktu penyusunan naskah. Rata-rata waktu menyusun satu naskah sebelum memakai aplikasi adalah [ISI: menit] menit, dan setelah memakai aplikasi menjadi [ISI: menit] menit. Catatan wawancara yang paling sering muncul adalah [ISI: ringkasan jawaban guru], sedangkan bagian yang dianggap perlu diperbaiki adalah [ISI: daftar usulan perbaikan].
+
+Temuan penelitian ini sejalan dengan laporan Sinta dkk. (2022) dan Huliatunisa dkk. (2022) bahwa kendala utama guru terletak pada keterampilan dan waktu, bukan pada penguasaan materi. Aplikasi Niki tidak menggantikan kemampuan guru dalam menulis butir soal, tetapi mengambil alih pekerjaan tata letak yang berulang. Bagian yang semula harus dikerjakan ulang setiap kali menyusun naskah, seperti kop, identitas peserta, penomoran, dan pemisahan halaman, kini dihasilkan otomatis oleh aplikasi.
+
+Pilihan merancang aplikasi sebagai halaman web yang ringan mengikuti temuan Hanifah dkk. (2025) bahwa guru madrasah membutuhkan alat yang sesuai kebutuhan dan mudah dipakai, serta temuan Safitri dkk. (2023) bahwa pemanfaatan teknologi informasi yang sederhana pun berdampak pada mutu pengelolaan pendidikan. Aplikasi ini tidak menuntut pemasangan, tidak memerlukan akun, dan tidak memerlukan biaya, sehingga hambatan teknis yang biasanya muncul pada penerapan teknologi di madrasah dapat ditekan.
+
+Ditinjau dari proses pengembangan, penggunaan model ADDIE membantu peneliti menempatkan tanggapan guru sebagai dasar perbaikan, sebagaimana ditunjukkan Muryandari dan Sujatmiko (2025) pada media pembelajaran berbasis web. Bila dibandingkan dengan aplikasi bank soal seperti yang dilaporkan Ula dkk. (2025), Niki memilih fokus yang berbeda. Aplikasi bank soal menekankan penyediaan kumpulan butir soal, sedangkan Niki menekankan penyusunan naskah ujian cetak yang siap difotokopi, lengkap dengan kop dan identitas peserta. Kedua pendekatan itu saling melengkapi, dan guru dapat memakai bank soal untuk mengumpulkan butir soal lalu memakai Niki untuk menyusun naskahnya.
+
+Penelitian ini memiliki beberapa keterbatasan. Uji coba hanya dilakukan di satu madrasah dengan [ISI: jumlah guru] guru sehingga hasilnya belum dapat digeneralisasi ke madrasah lain. Aplikasi belum memiliki fitur analisis butir soal, seperti penghitungan tingkat kesukaran dan daya pembeda, yang penting untuk menilai mutu soal secara empiris (Pradita dkk., 2023). Penyimpanan naskah masih bergantung pada unduhan berkas dan pencetakan, belum ada penyimpanan daring yang tersinkronisasi antarperangkat. Huruf yang dipakai dimuat dari internet, sehingga bentuk huruf dapat berbeda bila perangkat sedang tidak terhubung jaringan, walaupun tata letak naskah tetap utuh karena aplikasi memakai huruf sistem sebagai cadangan.
+
+KESIMPULAN DAN SARAN
+
+Kesimpulan. Penelitian pengembangan ini menghasilkan aplikasi web Niki yang membantu guru menyusun naskah soal ujian berukuran A4, mulai dari pengisian kop dan identitas peserta sampai pencetakan. Aplikasi dapat diakses bebas pada alamat https://nikiapp.vercel.app/ tanpa pemasangan dan tanpa biaya, dan seluruh data diproses di peramban pengguna. Hasil uji coba terbatas di MI Plus Darul Falah Mojoagung, Jombang, menunjukkan skor rata-rata [ISI: skor] dari 5 dengan kategori [ISI: kategori]. Guru menilai aplikasi ini mengurangi pekerjaan tata letak dan mempercepat penyusunan naskah, sedangkan mutu butir soal tetap sepenuhnya menjadi tanggung jawab guru.
+
+Saran. Pertama, madrasah dapat memakai aplikasi ini secara rutin dan menyimpan format kop yang sama agar naskah ujian konsisten setiap semester. Kedua, pengembangan berikutnya disarankan menambahkan analisis butir soal serta penyimpanan naskah di peramban agar guru tidak perlu menyusun ulang naskah lama. Ketiga, uji coba perlu diperluas ke beberapa madrasah dengan jumlah guru yang lebih banyak agar hasilnya lebih meyakinkan. Keempat, pendampingan singkat bagi guru yang belum terbiasa memakai penanda format perlu disiapkan, sejalan dengan temuan Simalango (2021) bahwa pendampingan teknis tetap dibutuhkan meskipun aplikasi yang dipakai sederhana.
+
+DAFTAR PUSTAKA
+
+Arikunto, S. (2018). Dasar-dasar evaluasi pendidikan (Edisi Ketiga). Jakarta: Bumi Aksara.
+
+Branch, R. M. (2009). Instructional design: The ADDIE approach. New York: Springer. https://doi.org/10.1007/978-0-387-09506-6
+
+Fadilah, D., Musabihatul Kudsiah, Novia Karlinda, & Haifaturrahmah. (2021). Pengembangan bank soal tematik berbasis Higher Order Thinking Skills (HOTS) di sekolah dasar. JIPD (Jurnal Inovasi Pendidikan Dasar), 5(1), 6-11. https://doi.org/10.36928/jipd.v5i1.704
+
+Hanifah, N., Umurohmi, U., Kusuma, N., & Maisaroh, I. (2025). Kompetensi guru dalam era digital di madrasah ibtidaiyah. EDUKATIF: Jurnal Ilmu Pendidikan, 7(1). https://edukatif.org/edukatif/article/view/8003
+
+Huliatunisa, Y., Saputra, T., Sulistiyani, P. S., Ramadhanty, S., Fauziah, P., & Rahmanda, F. P. (2022). Strategi guru dalam menyusun soal evaluasi matematika berbasis HOTS pada siswa kelas 6 SDN Kalideres 06 Pagi. MASALIQ, 2(4), 478-488. https://doi.org/10.58578/masaliq.v2i4.443
+
+Muryandari, P. R., & Sujatmiko, B. (2025). Implementasi model ADDIE dalam pengembangan media pembelajaran berbasis web untuk meningkatkan keahlian pemrograman dasar di SMKN 1 Wonoasri. IT-Edu: Jurnal Information Technology and Education, 10(2), 90-97. https://doi.org/10.26740/it-edu.v10i02.68124
+
+Pradita, E., Megawanti, P., & Yulianingsih, Y. (2023). Analisis tingkat kesukaran, daya pembeda, dan fungsi distraktor PTS matematika SMPN Jakarta. Himpunan: Jurnal Ilmiah Mahasiswa Pendidikan Matematika, 3(1). https://jim.unindra.ac.id/index.php/himpunan/article/view/8645
+
+Rizaldy, M. Y. (2026). Niki: aplikasi penyusun naskah soal ujian. https://nikiapp.vercel.app/
+
+Safitri, S., Cahyadi, A., & Yaqin, H. (2023). Inovasi dan difusi pemanfaatan teknologi informasi dalam manajemen pendidikan Islam. Al-Madrasah: Jurnal Pendidikan Madrasah Ibtidaiyah, 7(4), 1706. https://doi.org/10.35931/am.v7i4.2678
+
+Simalango, H. M. (2021). Pelatihan pemanfaatan aplikasi Word dalam pembuatan model soal ujian pada guru SMA Maitreyawira Kota Batam. WIDYABHAKTI: Jurnal Ilmiah Populer, 4(1), 15-20. https://doi.org/10.30864/widyabhakti.v4i1.271
+
+Sinta, U. A., Roebyanto, G., & Nuraini, N. L. S. (2022). Analisis kesulitan guru dalam menyusun soal evaluasi berbasis HOTS pada pembelajaran matematika di SDN Torongrejo 2. Jurnal Pembelajaran, Bimbingan, dan Pengelolaan Pendidikan, 2(1), 45-53. https://doi.org/10.17977/um065v2i12022p45-53
+
+Sugiyono. (2019). Metode penelitian kuantitatif, kualitatif, dan R&D. Bandung: Alfabeta.
+
+Ula, M., Maryana, Zuraida, Cut Agusniar, Syibral Malasyi, & Mochamad Ari Saptari. (2025). Penerapan aplikasi pengembangan bank soal berbasis TPACK pada siswa sekolah menengah atas. Jurnal Malikussaleh Mengabdi, 4(1), 93-100. https://doi.org/10.29103/jmm.v4i1.22074
+
+CATATAN PENULIS (HAPUS BAGIAN INI SEBELUM DOKUMEN DIKUMPULKAN)
+
+Dokumen ini belum memuat angka hasil uji coba karena angka tersebut harus berasal dari rekap data asli di MI Plus Darul Falah Mojoagung, Jombang. Semua tempat yang perlu diisi ditandai dengan penanda bertuliskan ISI, dan daftar lengkap penanda tersebut dilaporkan terpisah saat dokumen ini diserahkan.

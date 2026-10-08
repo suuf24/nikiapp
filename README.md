@@ -30,6 +30,7 @@ lalu buka `http://localhost:8000/index.html`.
 | `index.html` | seluruh aplikasi: markup, gaya, dan skrip |
 | `Design.md` | sistem desain: prinsip, token warna, tipografi, komponen |
 | `icon.png` | gambar sumber ikon aplikasi |
+| `Karya Tulis Ilmiah - Aplikasi Niki - Mohammad Yusuf Rizaldy.txt` | karya tulis ilmiah terpisah, bukan bagian dari aplikasi |
 | `tools/m3-palette.mjs` | menghasilkan blok token warna Material 3 dan menyisipkannya ke `index.html` |
 | `tools/app-icon.mjs` | menyiapkan blok ikon di `index.html` dari `icon.png` |
 | `tools/typecheck.mjs` | memeriksa tipe skrip inline di `index.html` |
