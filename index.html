@@ -853,6 +853,13 @@ input[type="file"] {
     content: "";
     position: absolute;
     inset: 0;
+    /*
+     * Lapisan umpan balik ini mewarisi radius induknya. Tombol tidak berubah
+     * karenanya: sudutnya sudah dipotong `overflow: hidden` miliknya sendiri.
+     * Butir segmented tidak punya pemotong itu, jadi tanpa radius di sini
+     * sudut kotak lapisannya melimpah keluar pill saat disorot.
+     */
+    border-radius: inherit;
     background: currentColor;
     opacity: 0;
     pointer-events: none;
@@ -1857,20 +1864,6 @@ input[type="file"] {
     font: 400 12px/1.6 var(--md-ref-typeface-mono);
 }
 
-/*
- * Prompt AI panjangnya ratusan baris, jadi kotak pratinjaunya dibatasi
- * tinggi dan bergulir sendiri: panel Soal tetap pendek, dan pengguna tetap
- * bisa membaca seluruh isi prompt sebelum menyalinnya.
- */
-.md-prompt {
-    margin: var(--md-sys-space-3) 0 0;
-    padding: var(--md-sys-space-3);
-    max-height: 320px;
-    overflow: auto;
-    border-radius: var(--md-sys-shape-small);
-    background: var(--md-sys-color-surface-container);
-}
-
 /* =========================================================
    STATUS / DIAGNOSA PARSER
 ========================================================= */
@@ -1932,14 +1925,6 @@ input[type="file"] {
  */
 .md-figure-help {
     line-height: 1.4;
-}
-
-/*
- * Keterangan di panel Prompt AI: jaraknya dari baris tombol di atasnya.
- * `.md-figure-help` sendiri bermargin nol, jadi jarak itu ditulis di sini.
- */
-.md-ai-note {
-    margin-top: var(--md-sys-space-3);
 }
 
 .md-figure-summary {
@@ -3105,6 +3090,25 @@ input[type="file"] {
 @media (min-width: 901px) {
 
     /*
+     * Aksi langkah 1–2 berdiri di atas kartu dan menempel di bawah bar aplikasi
+     * (permintaan pengguna: tombolnya terjangkau tanpa menggulir). Di markup ia
+     * memang duduk di sana, bukan digeser `order`, supaya urutan fokus tetap
+     * sama dengan urutan visual. Latarnya opak sebab isi kartu lewat di
+     * bawahnya saat menggulir; z-index 20 tetap di bawah bar aplikasi (40).
+     */
+    #panel1 > .md-actions,
+    #panel2 > .md-actions {
+        position: sticky;
+        top: var(--app-topbar-height);
+        z-index: 20;
+        margin: 0 0 var(--md-sys-space-7);
+        padding: 0 0 var(--md-sys-space-4);
+        border-top: 0;
+        border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        background: var(--md-sys-color-surface-container-lowest);
+    }
+
+    /*
      * Pagar .md-wizard dilepas hanya di langkah Preview; di langkah 1–2
      * formulirnya tetap 1200 px di tengah. Kelasnya dipasang showStep().
      */
@@ -3575,6 +3579,23 @@ input[type="file"] {
     #panel3.is-controls-open .md-preview-toolbar {
         transform: none;
         visibility: visible;
+    }
+
+    /*
+     * Baris aksi kembali ke dasar kartu di layar sempit: di markup ia kini
+     * berdiri di atas (lihat blok min-width 901px), jadi urutannya dibalik di
+     * sini supaya `sticky bottom` di bawah benar-benar menempel di dasar kartu
+     * dan jempol tetap yang paling dekat dengannya.
+     */
+    #panel1.is-active,
+    #panel2.is-active {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #panel1 > .md-actions,
+    #panel2 > .md-actions {
+        order: 1;
     }
 
     /* Aksi utama menempel di bawah layar agar selalu terjangkau. */
@@ -4070,7 +4091,7 @@ input[type="file"] {
         </symbol>
         <!--
              Buka di tab lain: kotak dengan panah keluar dari sudut kanan atas.
-             Dipakai tombol "Kerjakan di ChatGPT/AI Studio". Digambar sendiri dalam
+             Dipakai tombol "Buat di ChatGPT/AI Studio". Digambar sendiri dalam
              gaya stroke yang sama dengan ikon lain, bukan glif Material.
         -->
         <symbol id="i-open" viewBox="0 0 24 24">
@@ -4187,6 +4208,24 @@ input[type="file"] {
                     </p>
                 </div>
             </header>
+
+            <!--
+                Aksi langkah berdiri di atas kartu (permintaan pengguna: tidak
+                perlu menggulir untuk mencapainya), dan di desktop menempel di
+                bawah bar aplikasi. Di markup ia memang di sini, bukan digeser
+                `order`, supaya urutan fokus sama dengan urutan visual; blok
+                max-width 900px membalikkannya lagi ke dasar kartu di layar
+                sempit agar tetap dekat jempol.
+            -->
+            <div class="md-actions no-print">
+                <span></span>
+                <div class="md-actions__right">
+                    <button type="button" class="md-button md-button--filled md-button--with-icon" id="toStep2">
+                        <span>Lanjutkan</span>
+                        <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-forward"/></svg>
+                    </button>
+                </div>
+            </div>
 
             <div class="md-panel__body">
 
@@ -4321,16 +4360,6 @@ input[type="file"] {
 
             </div>
 
-            <div class="md-actions no-print">
-                <span></span>
-                <div class="md-actions__right">
-                    <button type="button" class="md-button md-button--filled md-button--with-icon" id="toStep2">
-                        <span>Lanjutkan</span>
-                        <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-forward"/></svg>
-                    </button>
-                </div>
-            </div>
-
         </section>
 
 
@@ -4346,10 +4375,31 @@ input[type="file"] {
                 <div>
                     <h2 class="md-panel__title md-headline-small" id="panel2Title" tabindex="-1">Masukkan Soal</h2>
                     <p class="md-panel__description md-body-medium">
-                        Pilih satu sumber soal, lalu periksa hasil bacanya sebelum lanjut ke preview.
+                        Pilih salah satu cara memasukkan soal, lalu periksa hasil bacanya sebelum lanjut ke preview.
                     </p>
                 </div>
             </header>
+
+            <!--
+                Aksi langkah berdiri di atas kartu dan menempel di bawah bar
+                aplikasi di desktop (permintaan pengguna: tidak perlu menggulir
+                untuk mencapainya). Di markup ia memang di sini, bukan digeser
+                `order`, supaya urutan fokus sama dengan urutan visual; blok
+                max-width 900px membalikkannya lagi ke dasar kartu di layar
+                sempit agar tetap dekat jempol.
+            -->
+            <div class="md-actions no-print">
+                <button type="button" class="md-button md-button--text md-button--with-icon" id="backToStep1">
+                    <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-back"/></svg>
+                    <span>Kembali</span>
+                </button>
+                <div class="md-actions__right">
+                    <button type="button" class="md-button md-button--filled md-button--with-icon" id="toStep3">
+                        <span>Preview</span>
+                        <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-forward"/></svg>
+                    </button>
+                </div>
+            </div>
 
             <div class="md-panel__body">
 
@@ -4360,7 +4410,7 @@ input[type="file"] {
                     lihat setSource().
                 -->
                 <div class="md-segmented" role="radiogroup" aria-label="Cara memasukkan soal">
-                    <button type="button" class="md-segmented__item" role="radio" aria-checked="true" id="sourceFile">
+                    <button type="button" class="md-segmented__item" role="radio" aria-checked="false" id="sourceFile">
                         <svg class="md-icon md-icon--18 md-segmented__check" aria-hidden="true"><use href="#i-check"/></svg>
                         <svg class="md-icon md-icon--18 md-segmented__glyph" aria-hidden="true"><use href="#i-doc"/></svg>
                         <span>Berkas TXT</span>
@@ -4370,7 +4420,7 @@ input[type="file"] {
                         <svg class="md-icon md-icon--18 md-segmented__glyph" aria-hidden="true"><use href="#i-edit"/></svg>
                         <span>Ketik manual</span>
                     </button>
-                    <button type="button" class="md-segmented__item" role="radio" aria-checked="false" id="sourceAi">
+                    <button type="button" class="md-segmented__item" role="radio" aria-checked="true" id="sourceAi">
                         <svg class="md-icon md-icon--18 md-segmented__check" aria-hidden="true"><use href="#i-check"/></svg>
                         <svg class="md-icon md-icon--18 md-segmented__glyph" aria-hidden="true"><use href="#i-sparkle"/></svg>
                         <span>Prompt AI</span>
@@ -4378,7 +4428,7 @@ input[type="file"] {
                 </div>
 
                 <!-- Sumber: file TXT -->
-                <div id="sourcePanelFile">
+                <div id="sourcePanelFile" hidden>
 
                     <div class="md-dropzone" id="questionDropzone">
                         <span class="md-dropzone__icon" aria-hidden="true">
@@ -4429,25 +4479,26 @@ input[type="file"] {
 
                 </div>
 
-                <!-- Sumber: prompt AI -->
-                <div id="sourcePanelAi" hidden>
+                <!--
+                    Sumber: prompt AI. Panel ini yang tampil lebih dulu di langkah
+                    ini (lihat setSource() dan state.sourceTab): guru membuka
+                    aplikasi, menekan tombol AI, lalu menempel hasilnya.
+                -->
+                <div id="sourcePanelAi">
 
                     <p class="md-figure-help md-body-small">
-                        Prompt ini menyusun soal dari nol: AI akan menanyakan mata pelajaran, bab, sub bab (yang
-                        mengikuti bab itu), kelas, jumlah soal, dan tingkat kesulitan satu per satu, lalu
-                        mengeluarkan teks berformat <code>[SECTION]</code> dan <code>[QUESTION]</code> di dalam
-                        satu codebox, sama dengan format di panel <strong>Ketik manual</strong>, jadi hasilnya bisa
-                        langsung ditempel di sana. Pagar codebox yang ikut tersalin dibuang otomatis oleh aplikasi.
+                        Prompt ini menanyakan kebutuhan soal satu per satu, lalu hasilnya bisa langsung
+                        ditempel di panel <strong>Ketik manual</strong>.
                     </p>
 
                     <div class="md-inline-actions">
                         <button type="button" class="md-button md-button--filled md-button--with-icon" id="generateChatGpt">
                             <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-open"/></svg>
-                            <span>Kerjakan di ChatGPT</span>
+                            <span>Buat di ChatGPT</span>
                         </button>
                         <button type="button" class="md-button md-button--filled md-button--with-icon" id="generateAiStudio">
                             <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-open"/></svg>
-                            <span>Kerjakan di AI Studio</span>
+                            <span>Buat di AI Studio</span>
                         </button>
                         <!--
                             Langkah penutupnya sengaja ikut di baris ini: setelah
@@ -4460,22 +4511,6 @@ input[type="file"] {
                             <span>Lanjut tempel di “Ketik manual”</span>
                         </button>
                     </div>
-
-                    <!--
-                        Dua layanan yang tautannya benar-benar membawa prompt:
-                        ChatGPT lewat ?q= dan AI Studio lewat ?prompt= — itulah
-                        sebabnya promptnya tidak ikut disalin ke papan klip.
-                        Gemini pernah ada di sini dan dihapus — lihat catatan di
-                        AI_CHAT_TARGETS. Jangan dihidupkan lagi tanpa parameter
-                        URL yang benar-benar mengisi kotaknya.
-                    -->
-                    <p class="md-figure-help md-body-small md-ai-note">
-                        Promptnya ikut di dalam tautannya: ChatGPT menerima <code>?q=</code> dan AI Studio
-                        menerima <code>?prompt=</code>, jadi kotak pesannya sudah terisi begitu terbuka, dan
-                        aplikasi berpindah ke panel <strong>Ketik manual</strong> untuk menampung hasilnya.
-                    </p>
-
-                    <pre class="md-prompt" id="aiPromptPreview"></pre>
 
                 </div>
 
@@ -4530,19 +4565,6 @@ input[type="file"] {
                     </div>
                 </details>
 
-            </div>
-
-            <div class="md-actions no-print">
-                <button type="button" class="md-button md-button--text md-button--with-icon" id="backToStep1">
-                    <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-back"/></svg>
-                    <span>Kembali</span>
-                </button>
-                <div class="md-actions__right">
-                    <button type="button" class="md-button md-button--filled md-button--with-icon" id="toStep3">
-                        <span>Preview</span>
-                        <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-forward"/></svg>
-                    </button>
-                </div>
             </div>
 
         </section>
@@ -6134,8 +6156,13 @@ const state = {
      * Dibedakan dari `source` karena tab "ai" bukan sumber data soal — ia hanya
      * panel pembantu, jadi naskah yang sudah dimuat tidak boleh ikut berubah
      * hanya karena tabnya dibuka.
+     *
+     * Bawaannya "ai" (permintaan pengguna): langkah "Masukkan Soal" terbuka
+     * langsung di panel prompt, karena mengerjakan prompt di AI lalu menempel
+     * hasilnya adalah alur terpendek. Nilai ini juga yang memasang aria-checked
+     * dan panel mana yang tampil saat aplikasi dibuka (lihat init()).
      */
-    sourceTab: "file",
+    sourceTab: "ai",
     zoom: 1,
     zoomMode: "fit",
     theme: "auto",
@@ -6394,6 +6421,13 @@ const logoPlaceholder = $("logoPlaceholder");
 const removeLogoButton = $("removeLogo");
 const previewStage = $("previewStage");
 
+/*
+ * Rel kendali kiri ikut jadi sasaran roda (lihat scrollStageByWheel). Ia tidak
+ * diberi id baru: satu rujukan ini cukup, dan id baru berarti satu entri lagi
+ * di peta ElementTypes.
+ */
+const previewSide = $("panel3").querySelector(".md-preview-side");
+
 
 /* =========================================================
    UTIL
@@ -6439,7 +6473,17 @@ async function copyText(text, successMessage) {
     textarea.select();
 
     try {
-        document.execCommand("copy");
+        /*
+         * Nilai kembaliannya diperiksa, bukan hanya eksepsinya: `execCommand`
+         * yang gagal menjawab `false` tanpa melempar apa pun, dan jalur ini
+         * adalah satu-satunya cara promptnya sampai ke layanan sejak kotak
+         * pratinjau dilepas. Menganggap `false` sebagai berhasil akan memberi
+         * kabar "tersalin" untuk prompt yang tidak pernah masuk papan klip.
+         */
+        if (!document.execCommand("copy")) {
+            return false;
+        }
+
         showSnackbar(successMessage);
         return true;
     } catch (error) {
@@ -9992,9 +10036,12 @@ function scrollToPage(number) {
 
    Karena itu roda di atas kanvas diurus di sini: jaraknya dihitung, lalu
    `scrollTop` kanvas dipindahkan sendiri, dan peristiwa bawaannya dibatalkan
-   supaya tidak dobel. Di ujung gulir peristiwanya sengaja TIDAK dibatalkan,
-   agar sisa gerakannya masih bisa dipakai lapisan di belakangnya (di layar
-   sempit yang menggulir justru halaman, bukan kanvas).
+   supaya tidak dobel. Sisa jarak yang tidak lagi tertampung kertas diteruskan
+   ke rel kendali kiri (lihat scrollStageByWheel), sebab di tata letak lebar
+   halaman di belakangnya memang tidak bisa menggulir: panel pratinjau dipagari
+   setinggi jendela dan `overflow: hidden`. Di layar sempit tidak ada yang
+   diteruskan — kanvasnya di sana memang tidak punya gulir sendiri, jadi
+   seluruh halaman yang menggulir, seperti sebelumnya.
 ========================================================= */
 
 /* Satu "baris" roda yang datang sebagai satuan baris (`deltaMode` 1). */
@@ -10013,6 +10060,45 @@ function wheelScrollPx(event) {
     return event.deltaY;
 }
 
+/*
+ * Ambang tata letak pratinjau lebar: angka yang sama dipakai CSS untuk
+ * memasang rel 360 px di samping kanvas.
+ */
+const PREVIEW_WIDE_LAYOUT = window.matchMedia("(min-width: 901px)");
+
+/*
+ * Memindahkan gulir satu elemen sejauh `delta`, lalu mengembalikan berapa jarak
+ * yang benar-benar terpakai (0 bila elemen itu sudah di ujung ke arah itu).
+ * Dipakai untuk membagi satu tarikan roda antara kertas dan rel kendali.
+ */
+function scrollElementByWheel(element, delta) {
+    if (!element) {
+        return 0;
+    }
+
+    const before = element.scrollTop;
+    const limit = element.scrollHeight - element.clientHeight;
+    const next = Math.min(limit, Math.max(0, before + delta));
+
+    if (next === before) {
+        return 0;
+    }
+
+    element.scrollTop = next;
+
+    /*
+     * Yang dihitung sebagai perpindahan adalah yang benar-benar terjadi, bukan
+     * yang direncanakan: `scrollHeight` dan `clientHeight` adalah bilangan
+     * bulat, sedangkan `scrollTop` boleh pecahan, jadi di ujung gulir rencana
+     * menyisakan sepersekian piksel (terukur 124,67 → 125). Sisa sepersekian
+     * piksel itu bukan perpindahan — bila dianggap bergerak, roda di ujung
+     * gulir akan menahan peristiwanya tanpa ada yang benar-benar bergeser.
+     */
+    const moved = element.scrollTop - before;
+
+    return Math.abs(moved) < 1 ? 0 : moved;
+}
+
 function scrollStageByWheel(event) {
     /*
      * Roda dengan Shift adalah gulir mendatar di Windows dan dengan Ctrl
@@ -10029,20 +10115,36 @@ function scrollStageByWheel(event) {
         return;
     }
 
-    const limit = previewStage.scrollHeight - previewStage.clientHeight;
-    const next = Math.min(limit, Math.max(0, previewStage.scrollTop + delta));
+    const movedPaper = scrollElementByWheel(previewStage, delta);
 
     /*
-     * Tanpa perpindahan berarti kanvas tidak bisa bergerak ke arah itu:
-     * peristiwanya dilepas, bukan ditelan. Di layar sempit kanvasnya memang
-     * tidak punya gulir sendiri, jadi seluruh halaman tetap bisa digulir.
+     * Sisa jaraknya diteruskan ke rel kendali kiri (permintaan pengguna: roda di
+     * atas kertas harus bisa menggulir seluruh antarmuka pratinjau). Di tata
+     * letak lebar kedua kolom sama-sama setinggi jendela, jadi tanpa penerusan
+     * ini kursor yang berhenti di atas kertas tidak akan pernah menyentuh
+     * kendali di rel — dan halaman di belakangnya pun tidak bisa menggulir,
+     * sebab panelnya dipagari setinggi jendela.
+     *
+     * Yang diteruskan hanya sisa yang tidak terpakai kertas, sehingga satu
+     * tarikan roda yang masih tertampung kertas tidak menyentuh rel sama
+     * sekali. Di bawah 901 px tidak ada yang diteruskan: di sana rel itu laci
+     * yang bisa dibuka-tutup, dan yang menggulir memang halaman.
      */
-    if (next === previewStage.scrollTop) {
+    const movedRail =
+        movedPaper !== delta && PREVIEW_WIDE_LAYOUT.matches
+            ? scrollElementByWheel(previewSide, delta - movedPaper)
+            : 0;
+
+    /*
+     * Tanpa perpindahan sama sekali di kedua kolom, peristiwanya dilepas bukan
+     * ditelan: di layar sempit kanvasnya memang tidak punya gulir sendiri, jadi
+     * seluruh halaman tetap bisa digulir.
+     */
+    if (!movedPaper && !movedRail) {
         return;
     }
 
     event.preventDefault();
-    previewStage.scrollTop = next;
 }
 
 
@@ -10259,6 +10361,34 @@ function leaveEditMode() {
     );
 
     setEditControls();
+
+    /*
+     * Tombol Simpan/Batal yang baru saja disembunyikan membawa fokus pergi
+     * bersamanya: peramban memindahkan fokus ke `body` saat elemen yang
+     * difokuskan menjadi tidak dapat difokuskan. Tanpa pemulihan ini, pengguna
+     * papan tik yang menyimpan atau membatalkan dengan Enter kehilangan
+     * tempatnya dan harus menekan Tab dari bar atas lagi. Fokusnya kembali ke
+     * tombol mode edit yang muncul menggantikan keduanya — pola yang sama
+     * dengan `#menuButton` untuk laci kendali dan tombol tutup dialog.
+     */
+    const tombolMode = $("toggleEdit");
+
+    /*
+     * Yang dianggap kehilangan fokus bukan hanya `body`: peramban memindahkan
+     * fokus ke `body` saat elemen yang difokuskan menjadi tidak dapat
+     * difokuskan, tetapi perpindahan itu terjadi setelah gaya dan tata
+     * letaknya dihitung — jadi di sini fokusnya masih bisa menunjuk salah satu
+     * tombol yang baru saja disembunyikan. Keduanya diperiksa.
+     */
+    const aktif = document.activeElement;
+    const kehilanganFokus =
+        !aktif ||
+        aktif === document.body ||
+        (aktif instanceof HTMLElement && aktif.closest("#editActions, #layoutActions") !== null);
+
+    if (kehilanganFokus && !tombolMode.hidden && !tombolMode.disabled) {
+        tombolMode.focus();
+    }
 }
 
 
@@ -11419,13 +11549,44 @@ function wireEvents() {
         $("menuButton").focus();
     });
 
+    /*
+     * Escape di langkah Preview punya tiga sasaran, berurutan dari lapisan
+     * paling atas: dialog modal, laci kendali layar sempit, lalu sesi edit.
+     * Yang terakhir ditangani di sini, bukan hanya di `#document`, sebab
+     * sejak kanvas bisa difokuskan (`tabindex` di #previewStage) fokus bisa
+     * berada di luar naskah — dan di sana Escape dulu tidak melakukan apa
+     * pun, padahal cancelPreviewEdits() adalah janji yang sama dengan tombol
+     * Batal.
+     */
     document.addEventListener("keydown", function (event) {
-        if (event.key !== "Escape" || !previewControlsOpen()) {
+        if (event.key !== "Escape") {
             return;
         }
 
-        setPreviewControls(false);
-        $("menuButton").focus();
+        /*
+         * Dialog modal menutup dirinya sendiri lewat peristiwa `cancel`
+         * bawaan (lihat pemasangan di bawah): Escape di dalamnya bukan
+         * perintah untuk membatalkan sesi edit yang berjalan di belakangnya.
+         */
+        if (event.target instanceof HTMLElement && event.target.closest("dialog[open]")) {
+            return;
+        }
+
+        if (previewControlsOpen()) {
+            setPreviewControls(false);
+            $("menuButton").focus();
+            return;
+        }
+
+        /*
+         * Di dalam naskah, penangan `keydown` milik `#document` sudah
+         * menjalankannya lebih dulu (peristiwanya naik lewat sana), jadi
+         * `state.editing` di sini sudah bernilai false dan tidak ada yang
+         * dijalankan dua kali.
+         */
+        if (state.editing) {
+            cancelPreviewEdits();
+        }
     });
 
     /*
@@ -11876,14 +12037,18 @@ async function generateWithAi(key) {
      * #questionText harus diberikan belakangan — kalau tidak, kursor mendarat di
      * kotak yang tidak lagi ada dan tempelannya tidak masuk ke soal.
      *
-     * Bila papan klipnya pun menolak, kabar penyalinan tadi tidak pernah muncul;
-     * pengguna diberi tahu jalur terakhirnya (kotak pratinjau prompt) alih-alih
-     * dibiarkan tanpa pesan sama sekali.
+     * Bila papan klipnya pun menolak, kabar penyalinan tadi tidak pernah muncul,
+     * jadi pengguna diberi satu kalimat yang menyebut jalan keluarnya. Sejak kotak
+     * pratinjau prompt dilepas dari panel Prompt AI (permintaan pengguna: prompt
+     * sepanjang itu tidak perlu dibaca di sana), tidak ada lagi tempat menyalin
+     * manual di dalam aplikasi — satu-satunya jalan promptnya sampai ke layanan
+     * adalah papan klip, sehingga yang bisa diminta dari pengguna adalah
+     * mengizinkan aksesnya lalu menekan tombolnya sekali lagi.
      */
     focusManualSource(
         copied
             ? ""
-            : "Promptnya tidak bisa disalin ke papan klip, salin dari kotak pratinjau prompt di bawah."
+            : "Promptnya tidak bisa disalin ke papan klip. Izinkan akses papan klip untuk halaman ini, lalu tekan tombolnya sekali lagi."
     );
 }
 
@@ -11891,7 +12056,7 @@ async function generateWithAi(key) {
  * Ujung lingkarannya: hasil dari AI ditempel di panel Ketik manual, karena
  * itulah sumber soal yang bisa menyimpan teks ketikan pengguna.
  *
- * Dipakai dua kali — sebagai langkah terakhir tombol "Kerjakan di …" (aplikasi
+ * Dipakai dua kali — sebagai langkah terakhir tombol "Buat di …" (aplikasi
  * pindah sendiri ke sini begitu tab AI-nya terbuka) dan oleh tombol "Lanjut
  * tempel di 'Ketik manual'". Pesannya opsional: pemanggil yang sudah menampilkan
  * kabar penyalinan lewat copyText() tidak memberi pesan, supaya kabar itu tidak
@@ -12147,9 +12312,6 @@ function wireAppIcon() {
      */
     $("templatePreview").textContent = getTemplateText().trim();
 
-    /* Pratinjau prompt AI memakai teks yang sama dengan yang disalin. */
-    $("aiPromptPreview").textContent = getAiPromptText();
-
     readForm();
     setMargin(state.settings.marginCm, { silent: true });
 
@@ -12175,7 +12337,20 @@ function wireAppIcon() {
     setKopStyle(state.settings.kopStyle, { silent: true });
 
     wireEvents();
-    setSource("file");
+
+    /*
+     * Panggilan pertama menyiapkan sumber soal dan statusnya seperti sebelumnya,
+     * panggilan kedua hanya memilih tab yang tampil (bawaannya panel Prompt AI;
+     * tab "ai" memang tidak menyentuh naskah — penjaganya ada di setSource()).
+     *
+     * Tab bawaannya dibaca LEBIH DULU, bukan di argumen panggilan kedua:
+     * setSource() sendiri menulis ulang state.sourceTab, jadi membacanya setelah
+     * panggilan pertama hanya akan mendapat "file".
+     */
+    const awalTab = state.sourceTab;
+
+    setSource(state.source);
+    setSource(awalTab);
     showStep(1, { focus: false });
     setZoom(1);
 })();
