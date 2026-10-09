@@ -79,8 +79,14 @@
   --md-sys-color-on-surface-rgb: 14 14 14;
   --md-sys-color-surface-variant: #e8e8e8;
   --md-sys-color-surface-variant-rgb: 232 232 232;
-  --md-sys-color-on-surface-variant: #6d6d6d;
-  --md-sys-color-on-surface-variant-rgb: 109 109 109;
+  /*
+   * #5f5f5f, bukan #6d6d6d: teks 16 px memakai token ini di atas
+   * surface-container-high #e8e8e8 (4,22:1) dan surface-container #eeeeee
+   * (4,46:1), dua-duanya di bawah ambang 4,5:1. Nilai ini terukur 5,21:1 dan
+   * 5,50:1 di atas keduanya, 6,38:1 di atas putih. (Audit UI/UX 9 Okt 2026, U5.)
+   */
+  --md-sys-color-on-surface-variant: #5f5f5f;
+  --md-sys-color-on-surface-variant-rgb: 95 95 95;
   --md-sys-color-surface-dim: #e2e2e2;
   --md-sys-color-surface-dim-rgb: 226 226 226;
   --md-sys-color-surface-bright: #ffffff;
@@ -453,11 +459,13 @@
 }
 
 /*
- * Wordmark. Bobot 800 hanya dipakai di sini, supaya nama aplikasi terbaca
- * sebagai merek, bukan sebagai judul biasa.
+ * Wordmark. Bobot 700, sama dengan bobot terberat yang benar-benar dimuat dari
+ * Google Fonts (400-700, lihat komentar di <head>): meminta 800 hanya membuat
+ * peramban mensintesis lemak palsu, sedangkan komentarnya sendiri sudah
+ * menyatakan "wordmark kini 700". (Audit UI/UX 9 Okt 2026, U12.)
  */
 .md-wordmark {
-    font: 800 18px/24px var(--md-ref-typeface-plain);
+    font: 700 18px/24px var(--md-ref-typeface-plain);
     letter-spacing: -0.25px;
 }
 
@@ -1446,20 +1454,6 @@ input[type="file"] {
 }
 
 /*
- * Baris bagian bukan daun editable, tetapi ia bisa dipilih sebagai sasaran
- * tombol jarak & halaman. Penunjuk kursor dan sorotan tipis saat melintas
- * memberi tahu bahwa baris judulnya memang bisa diklik; tanpa itu ia tampak
- * sebangun dengan naskah biasa yang tidak bisa diapa-apakan.
- */
-#document.is-editing .section-row {
-    cursor: pointer;
-}
-
-#document.is-editing .section-row:hover {
-    background: rgb(var(--app-accent-rgb) / 10%);
-}
-
-/*
  * Kanvas bisa digulir dengan papan tik (lihat tabindex di markup), jadi
  * fokusnya butuh penanda sendiri. Cincinnya digambar ke dalam tepi kanvas
  * supaya tidak terpotong baris grid di sekitarnya.
@@ -1470,62 +1464,30 @@ input[type="file"] {
 }
 
 /*
- * Penanda fokus untuk baris judul bagian yang difokuskan keyboard. Cincinnya
- * sama dengan cincin fokus aplikasi, hanya digambar ke dalam (offset negatif)
- * karena barisnya selebar area cetak: cincin yang keluar baris akan terpotong
- * oleh `overflow: hidden` halamannya. Sengaja `:focus-visible`, bukan `:focus`:
- * yang diklik dengan tetikus sudah punya sorotan sasaran, jadi cincinnya cukup
- * muncul saat baris itu dicapai dengan Tab.
+ * Mode edit naskah: kertas diganti kotak teks bertanda (permintaan pengguna).
+ * Kertasnya disembunyikan, bukan dibuang: tingginya diukur saat render, dan
+ * pengukuran di elemen yang tidak digambar selalu nol.
  */
-#document.is-editing .section-row:focus-visible {
-    outline: 2px solid var(--app-focus-ring);
-    outline-offset: -2px;
+.md-edit-stage:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--md-sys-space-4);
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-/*
- * Blok yang sedang disasar tombol tata letak diberi latar aksen tipis.
- * Namanya memang tertulis di rel, tetapi rel itu kolom lain: tanpa tanda di
- * kertas, blok mana yang akan bergeser baru ketahuan setelah tombolnya
- * ditekan. Latarnya dipasang pada sel (td), bukan pada baris atau bloknya,
- * supaya satu blok soal — yang terdiri dari beberapa baris — tersorot utuh
- * tanpa latar bertumpuk; dua latar beralpha yang bertumpuk akan menggelapkan
- * sebagian baris saja.
- */
-#document.is-editing .is-edit-target td {
-    background: rgb(var(--app-accent-rgb) / 10%);
+/* Kotak teks naskah: tinggi secukupnya, dan masih bisa ditarik sendiri. */
+#editText {
+    min-height: clamp(320px, 52vh, 720px);
+}
+
+.md-edit-stage__status {
+    color: var(--md-sys-color-on-surface-variant);
 }
 
 .md-edit-note .md-icon {
     flex: none;
     margin-top: 1px;
-}
-
-/*
- * Daun editable ditandai garis putus-putus; hanya di layar, jadi tidak
- * pernah ikut tercetak. `outline` dipakai supaya ukuran teks tidak berubah
- * sedikit pun saat mode edit masuk — paginasi tidak boleh bergeser hanya
- * karena mode berpindah.
- */
-#document.is-editing [contenteditable="true"] {
-    outline: 1px dashed var(--md-sys-color-outline);
-    outline-offset: 2px;
-    border-radius: 2px;
-    cursor: text;
-    transition: background-color var(--md-sys-motion-duration-short3) linear;
-}
-
-#document.is-editing [contenteditable="true"]:hover {
-    background: rgb(var(--app-accent-rgb) / 18%);
-}
-
-/*
- * Sorotan blok yang sedang disunting memakai kuning aksen, bukan abu
- * transparan: inilah "momen yang disorot" versi Design.md, dan pada kertas
- * putih blok yang sedang aktif jadi langsung terbaca.
- */
-#document.is-editing [contenteditable="true"]:focus {
-    outline: 2px solid var(--app-focus-ring);
-    background: rgb(var(--app-accent-rgb) / 26%);
 }
 
 /* =========================================================
@@ -2425,13 +2387,18 @@ input[type="file"] {
     flex: 0 0 auto;
 }
 
-/* Nomor halaman hanya di layar, disembunyikan saat cetak. */
+/*
+ * Nomor halaman hanya di layar, disembunyikan saat cetak. Warnanya #707070,
+ * 4,95:1 di atas kertas putih -- lolos 4,5:1 untuk teks 9 pt, sedangkan
+ * #9aa0a6 yang lama hanya 2,64:1. Tetap lebih muda dari hitam naskah, jadi
+ * tidak bersaing dengan isi soal. (Audit UI/UX 9 Okt 2026, U5.)
+ */
 .page::after {
     content: "Halaman " attr(data-page);
     position: absolute;
     right: 8mm;
     bottom: 8mm;
-    color: #9aa0a6;
+    color: #707070;
     /*
      * Longhand, bukan shorthand `font`: ukurannya memakai calc() yang
      * ditumpuk dengan variabel, dan bila shorthand-nya gagal diparse seluruh
@@ -3416,13 +3383,20 @@ input[type="file"] {
     }
 
     /*
-     * Bar atas di layar sempit hanya menyisakan merek + tombol menu: tema dan
-     * bantuan sudah pindah ke dalam sidebar (blok .md-drawer-theme dan
-     * .md-drawer-help), jadi tombol lamanya dibuang daripada jadi pintu kedua
-     * yang melakukan hal yang sama.
+     * Di langkah Preview, bar atas layar sempit hanya menyisakan merek + tombol
+     * menu: tema dan bantuan sudah pindah ke dalam sidebar (blok
+     * .md-drawer-theme dan .md-drawer-help), jadi tombol lamanya dibuang
+     * daripada jadi pintu kedua yang melakukan hal yang sama.
+     *
+     * Syaratnya `body.is-preview`, BUKAN tanpa syarat. Sidebar itu hidup di
+     * dalam panel pratinjau, jadi di langkah 1-2 tidak ada pintu lain ke tema
+     * maupun bantuan: menyembunyikan tombolnya di sana membuat keduanya tidak
+     * terjangkau sama sekali di ponsel. Terukur di 360x800, langkah 1: bar atas
+     * memuat merek + dua tombol ini dan tetap tanpa luapan mendatar.
+     * (Audit UI/UX 9 Okt 2026, U1.)
      */
-    #themeToggle,
-    #helpButton {
+    body.is-preview #themeToggle,
+    body.is-preview #helpButton {
         display: none;
     }
 
@@ -3830,7 +3804,10 @@ input[type="file"] {
 
 @media (pointer: coarse) {
     .md-button,
-    .md-segmented__item {
+    .md-segmented__item,
+    /* Opsi tema di drawer: di ponsel langkah Preview ia satu-satunya jalan
+       mengganti tema, dan tingginya 40 px tanpa baris ini. */
+    .md-drawer-theme__option {
         min-height: 44px;
     }
 
@@ -4109,7 +4086,7 @@ input[type="file"] {
         </symbol>
         <!--
              Buka di tab lain: kotak dengan panah keluar dari sudut kanan atas.
-             Dipakai tombol "Buat di ChatGPT/AI Studio". Digambar sendiri dalam
+             Dipakai tombol "Buat di ChatGPT". Digambar sendiri dalam
              gaya stroke yang sama dengan ikon lain, bukan glif Material.
         -->
         <symbol id="i-open" viewBox="0 0 24 24">
@@ -4132,15 +4109,6 @@ input[type="file"] {
              Tintanya diatur lewat .md-app-logo, bukan atribut fill di sini.
         -->
         <symbol id="app-logo" viewBox="0 -960 960 960">
-            <!--
-             * Naskah logo lama. Gambar PNG ini sudah tidak dipakai di mana pun:
-             * kop bar atas, splash, dan ikon tab kini memakai glif Material
-             * landscape_2_edit yang ada di bawah komentar ini.
-             * Isinya dibiarkan utuh sebagai catatan, karena memotongnya berarti
-             * harus menyalin ulang 6.176 karakter base64 yang ada di antara
-             * penanda komentar ini.
-             * <image id="appLogoSourceOld" href="data:image/png;base64,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" width="256" height="256"/>
-            -->
             <path id="appLogoSource" d="M363-280ZM46-160l138-276q10-20 28.5-32t41.5-12q24 0 44 12.5t29 35.5l27 66q2 6 9 5.5t9-6.5l86-287q14-48 53.5-77t89.5-29q49 0 87.5 28.5T742-657l36 104q-15 5-28.5 13T724-520l-14 15-44-127q-8-23-25-35.5T601-680q-23 0-40.5 13T535-631l-86 287q-9 28-32.5 46T363-280q-27 0-50-14.5T280-335l-27-66-118 241H46Zm514 40v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-340L683-120H560Zm300-263-37-37 37 37ZM620-180h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18 19ZM240-560q-50 0-85-35.5T120-680q0-50 35-85t85-35q50 0 85 35t35 85q0 49-35 84.5T240-560Zm0-80q17 0 28.5-11.5T280-680q0-17-11.5-28.5T240-720q-17 0-28.5 11.5T200-680q0 17 11.5 28.5T240-640Zm0-40Z"/>
         </symbol>
         <symbol id="i-sparkle" viewBox="0 0 24 24">
@@ -4443,12 +4411,12 @@ input[type="file"] {
                         <svg class="md-icon md-icon--18 md-segmented__glyph" aria-hidden="true"><use href="#i-doc"/></svg>
                         <span>Berkas TXT</span>
                     </button>
-                    <button type="button" class="md-segmented__item" role="radio" aria-checked="false" id="sourceManual">
+                    <button type="button" class="md-segmented__item" role="radio" aria-checked="true" id="sourceManual">
                         <svg class="md-icon md-icon--18 md-segmented__check" aria-hidden="true"><use href="#i-check"/></svg>
                         <svg class="md-icon md-icon--18 md-segmented__glyph" aria-hidden="true"><use href="#i-edit"/></svg>
                         <span>Ketik manual</span>
                     </button>
-                    <button type="button" class="md-segmented__item" role="radio" aria-checked="true" id="sourceAi">
+                    <button type="button" class="md-segmented__item" role="radio" aria-checked="false" id="sourceAi">
                         <svg class="md-icon md-icon--18 md-segmented__check" aria-hidden="true"><use href="#i-check"/></svg>
                         <svg class="md-icon md-icon--18 md-segmented__glyph" aria-hidden="true"><use href="#i-sparkle"/></svg>
                         <span>Prompt AI</span>
@@ -4508,9 +4476,9 @@ input[type="file"] {
                 </div>
 
                 <!--
-                    Sumber: prompt AI. Panel ini yang tampil lebih dulu di langkah
-                    ini (lihat setSource() dan state.sourceTab): guru membuka
-                    aplikasi, menekan tombol AI, lalu menempel hasilnya.
+                    Sumber: prompt AI. Panel ini hanya pembantu untuk mengambil
+                    prompt; ia tidak menjadi sumber soal sampai hasilnya ditempel di
+                    panel Ketik manual (lihat setSource() dan state.sourceTab).
                 -->
                 <div id="sourcePanelAi">
 
@@ -4524,13 +4492,9 @@ input[type="file"] {
                             <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-open"/></svg>
                             <span>Buat di ChatGPT</span>
                         </button>
-                        <button type="button" class="md-button md-button--filled md-button--with-icon" id="generateAiStudio">
-                            <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-open"/></svg>
-                            <span>Buat di AI Studio</span>
-                        </button>
                         <!--
                             Langkah penutupnya sengaja ikut di baris ini: setelah
-                            prompt dikerjakan di salah satu situs, berikutnya selalu
+                            prompt dikerjakan di ChatGPT, berikutnya selalu
                             menempel hasilnya di "Ketik manual" — jadi tombolnya
                             berdiri di sebelah pintu masuknya, bukan di baris lain.
                         -->
@@ -4587,7 +4551,8 @@ input[type="file"] {
                             <code>[ENTER]</code> menambah satu baris kosong, <code>[ENTER: 3]</code> menambah
                             tiga baris, dan <code>[HALAMAN-BARU]</code> memulai soal atau bagian itu di halaman
                             baru. Pemisah halaman itu juga bisa ditulis <code>[NEWPAGE]</code>, dan ketiganya
-                            bisa diatur langsung dari mode <strong>Edit naskah</strong> di langkah Preview.
+                            bisa disisipkan dari mode <strong>Edit naskah</strong> di langkah Preview, yang
+                            mengganti kertasnya dengan kotak teks naskah.
                         </p>
 <pre id="templatePreview"></pre>
                     </div>
@@ -4863,34 +4828,9 @@ input[type="file"] {
                         <div class="md-edit-note no-print" id="editNote" hidden role="status">
                             <svg class="md-icon md-icon--20" aria-hidden="true"><use href="#i-edit"/></svg>
                             <span>
-                                Mode edit aktif: perubahan teks maupun pengaturan jarak &amp; halaman baru berlaku
-                                setelah <strong>Simpan editan</strong>, dan halaman disusun ulang saat menyimpan.
+                                Mode edit aktif: kertas diganti kotak teks naskah di area preview. Perubahan teks
+                                maupun penanda jarak &amp; halaman baru berlaku setelah <strong>Simpan editan</strong>.
                             </span>
-                        </div>
-
-                        <!--
-                            Kendali tata letak naskah: jarak atas dan pemisah halaman.
-                            Muncul hanya selama mode edit, karena keduanya diatur sambil
-                            melihat hasilnya di kertas. Yang disasar adalah blok yang
-                            disentuh kursor atau terakhir diklik — satu soal, atau satu
-                            judul bagian — dan setiap tombol langsung menyusun ulang
-                            halaman tanpa membuang teks yang belum disimpan.
-                        -->
-                        <div class="md-layout-bar no-print" id="layoutActions" hidden role="group" aria-labelledby="layoutTitle">
-                            <span class="md-label-large md-layout-bar__title" id="layoutTitle">Jarak &amp; halaman</span>
-
-                            <span class="md-chip md-chip--status md-layout-bar__target" id="layoutTarget">Belum ada blok terpilih</span>
-
-                            <span class="md-layout-bar__buttons">
-                                <button type="button" class="md-button md-button--outlined" id="layoutRemove"
-                                        aria-label="Kurangi satu baris jarak atas">− 1 baris</button>
-                                <button type="button" class="md-button md-button--outlined" id="layoutAdd"
-                                        aria-label="Tambah satu baris jarak atas">+ 1 baris</button>
-                                <button type="button" class="md-button md-button--outlined" id="layoutBreak"
-                                        aria-pressed="false">Mulai halaman baru</button>
-                            </span>
-
-                            <span class="md-body-small md-layout-bar__hint" id="layoutState" aria-live="polite"></span>
                         </div>
 
                     </div>
@@ -4904,6 +4844,54 @@ input[type="file"] {
                         -->
                         <div class="md-preview-stage" id="previewStage" tabindex="0" role="region"
                              aria-label="Kanvas pratinjau dokumen">
+
+                            <!--
+                                Mode edit naskah: kertas diganti kotak teks bertanda
+                                (permintaan pengguna: "ketika edit naskah, preview akan
+                                berubah menjadi field div Ketik Manual"). Yang disunting
+                                adalah teks bertanda yang sama dengan panel Ketik manual,
+                                jadi tidak ada bentuk halaman yang tidak punya padanan di
+                                format TXT; kertasnya sendiri tinggal disembunyikan dan
+                                kembali begitu mode ini ditutup.
+                            -->
+                            <div class="md-edit-stage no-print" id="editStage" hidden>
+
+                                <div class="md-field md-field--textarea">
+                                    <textarea id="editText" class="md-field__input" placeholder=" " spellcheck="false"></textarea>
+                                    <label class="md-field__label" for="editText">Teks soal</label>
+                                    <span class="md-field__support">
+                                        Penanda yang sama dengan langkah 2: <code>[SECTION]</code>, <code>[QUESTION]</code>,
+                                        <code>[GAMBAR: nama-gambar]</code>, serta <code>[ENTER: 2]</code> dan
+                                        <code>[HALAMAN-BARU]</code> (<code>[NEWPAGE]</code> juga boleh) untuk jarak dan
+                                        halaman.
+                                    </span>
+                                </div>
+
+                                <!--
+                                    Kendali jarak & pemisah halaman: penandanya disisipkan ke
+                                    naskah pada blok tempat kursor berada, bukan lagi
+                                    mengubah data soal lewat blok yang diklik di kertas.
+                                -->
+                                <div class="md-layout-bar" id="layoutActions" role="group" aria-labelledby="layoutTitle">
+                                    <span class="md-label-large md-layout-bar__title" id="layoutTitle">Jarak &amp; halaman</span>
+
+                                    <span class="md-chip md-chip--status md-layout-bar__target" id="layoutTarget">Letakkan kursor di baris soal</span>
+
+                                    <span class="md-layout-bar__buttons">
+                                        <button type="button" class="md-button md-button--outlined" id="layoutRemove"
+                                                aria-label="Kurangi satu baris jarak atas">− 1 baris</button>
+                                        <button type="button" class="md-button md-button--outlined" id="layoutAdd"
+                                                aria-label="Tambah satu baris jarak atas">+ 1 baris</button>
+                                        <button type="button" class="md-button md-button--outlined" id="layoutBreak"
+                                                aria-pressed="false">Mulai halaman baru</button>
+                                    </span>
+
+                                    <span class="md-body-small md-layout-bar__hint" id="layoutState" aria-live="polite"></span>
+                                </div>
+
+                                <span class="md-body-small md-edit-stage__status" id="editStatus" aria-live="polite"></span>
+                            </div>
+
                             <div id="document">
                                 <div class="md-empty">
                                     <span class="md-empty__icon" aria-hidden="true">
@@ -5005,8 +4993,8 @@ input[type="file"] {
 <template id="helpContentTemplate">
     <ol class="md-help-steps md-body-medium">
             <li><strong>Identitas.</strong> Isi judul ujian, nama sekolah, dan identitas peserta untuk kop halaman pertama.</li>
-            <li><strong>Soal.</strong> Pilih satu sumber: muat berkas TXT, ketik langsung memakai penanda <code>[SECTION]</code> dan <code>[QUESTION]</code>, atau ambil <strong>Prompt AI</strong> lalu kerjakan di ChatGPT atau Google AI Studio dan tempel hasilnya di panel <strong>Ketik manual</strong>. Gambar disisipkan dengan penanda <code>[GAMBAR: nama-gambar]</code> setelah gambarnya ditambahkan pada panel <strong>Gambar soal</strong>.</li>
-            <li><strong>Preview.</strong> Periksa halaman A4, sesuaikan zoom, lalu tekan <strong>Cetak / PDF</strong>. Pilih "Simpan sebagai PDF" pada dialog cetak untuk menyimpan berkas. Bila ada soal yang perlu turun atau dimulai di halaman baru, pakai mode <strong>Edit naskah</strong> lalu tombol <strong>+ / − 1 baris</strong> dan <strong>Mulai halaman baru</strong>.</li>
+            <li><strong>Soal.</strong> Pilih satu sumber: muat berkas TXT, ketik langsung memakai penanda <code>[SECTION]</code> dan <code>[QUESTION]</code>, atau ambil <strong>Prompt AI</strong> lalu kerjakan di ChatGPT dan tempel hasilnya di panel <strong>Ketik manual</strong>. Gambar disisipkan dengan penanda <code>[GAMBAR: nama-gambar]</code> setelah gambarnya ditambahkan pada panel <strong>Gambar soal</strong>.</li>
+            <li><strong>Preview.</strong> Periksa halaman A4, sesuaikan zoom, lalu tekan <strong>Cetak / PDF</strong>. Pilih "Simpan sebagai PDF" pada dialog cetak untuk menyimpan berkas. Bila ada soal yang perlu diperbaiki, diturunkan, atau dimulai di halaman baru, pakai mode <strong>Edit naskah</strong>: kertasnya diganti kotak teks naskah, lalu tombol <strong>+ / − 1 baris</strong> dan <strong>Mulai halaman baru</strong> menyisipkan penandanya pada soal tempat kursor berada. Perubahannya berlaku setelah <strong>Simpan editan</strong>.</li>
         </ol>
         <p class="md-body-small md-dialog__description">
             Pintasan: <kbd>Ctrl</kbd> + <kbd>P</kbd> langsung mencetak dokumen yang sedang aktif.
@@ -6077,6 +6065,7 @@ HASIL AKHIR:
  * @property {HTMLInputElement} logoUrl
  * @property {HTMLInputElement} docFontSize
  * @property {HTMLTextAreaElement} questionText
+ * @property {HTMLTextAreaElement} editText
  * @property {HTMLSelectElement} docFontFamily
  * @property {HTMLSelectElement} kopStyle
  * @property {HTMLImageElement} logoPreview
@@ -6457,6 +6446,9 @@ const logoPreview = $("logoPreview");
 const logoPlaceholder = $("logoPlaceholder");
 const removeLogoButton = $("removeLogo");
 const previewStage = $("previewStage");
+const editStage = $("editStage");
+const editText = $("editText");
+const pasteAiResult = $("pasteAiResult");
 
 /*
  * Rel kendali kiri ikut jadi sasaran roda (lihat scrollStageByWheel). Ia tidak
@@ -6623,6 +6615,18 @@ function applyTheme(mode, options = {}) {
 
 let snackbarTimer = null;
 
+/*
+ * Lama pesan bertahan di layar mengikuti panjangnya. Pesan panduan memuat
+ * langkah berikutnya ("promptnya tidak bisa disalin... lalu tekan tombolnya
+ * sekali lagi") sampai \u00b1 200 karakter, dan pada 4 detik tetap ia sudah hilang
+ * sebelum sempat dibaca. 60 ms per karakter, dengan lantai 4 detik dan plafon
+ * 10 detik: pesan pendek tetap seringkas dulu, pesan panjang dapat waktu
+ * sebanding tanpa mengunci layar. (Audit UI/UX 9 Okt 2026, U4.)
+ */
+function snackbarDuration(message) {
+    return Math.min(10000, Math.max(4000, String(message || "").length * 60));
+}
+
 function showSnackbar(message, options = {}) {
     const snackbar = $("snackbar");
     const action = $("snackbarAction");
@@ -6646,7 +6650,7 @@ function showSnackbar(message, options = {}) {
     snackbar.classList.add("is-visible");
 
     clearTimeout(snackbarTimer);
-    snackbarTimer = setTimeout(hideSnackbar, options.duration || 4000);
+    snackbarTimer = setTimeout(hideSnackbar, options.duration || snackbarDuration(message));
 }
 
 function hideSnackbar() {
@@ -10225,26 +10229,21 @@ function setPreviewControls(open) {
 
 /* =========================================================
    MODE EDIT PRATINJAU
-   Naskah boleh disunting langsung di kertas. Yang bisa diubah hanya teks soal
-   dan pilihan (nomor, teks soal, label + teks pilihan a–d); kop, judul bagian,
-   gambar, dan urutan soal tetap datang dari data soal di langkah sebelumnya.
-   Karena itu setiap editan selalu bisa dinyatakan kembali sebagai teks soal —
-   tidak ada bentuk halaman yang tidak punya padanan di format TXT.
+   Preview diganti kotak teks naskah (permintaan pengguna: "ketika edit naskah,
+   preview akan berubah menjadi field div Ketik Manual"). Yang disunting adalah
+   teks bertanda yang sama dengan panel Ketik manual di langkah 2, jadi tidak
+   ada bentuk halaman yang tidak punya padanan di format TXT: kop, gambar, dan
+   urutan soal tetap datang dari data soal.
 ========================================================= */
 
-const EDIT_LEAF_SELECTOR = "[data-edit]";
-
-function editLeaves() {
-    return documentContainer.querySelectorAll(EDIT_LEAF_SELECTOR);
+/* Teks sumber yang sedang aktif: isi kotak langkah 2, atau isi berkas TXT. */
+function currentSourceText() {
+    return state.source === "manual" ? questionText.value : fileText;
 }
 
-/*
- * Spasi, tab, dan baris baru dari mengetik atau menempel dirapikan menjadi
- * satu spasi: format TXT menggabungkan baris teks soal dengan spasi, dan daun
- * editable semuanya satu baris.
- */
-function cleanEditedText(value) {
-    return String(value || "").replace(/\s+/g, " ").trim();
+/* Baris baru disamakan sebelum teks masuk atau keluar kotak edit. */
+function normalizeNewlines(text) {
+    return String(text || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 }
 
 /*
@@ -10267,6 +10266,9 @@ function setEditControls() {
      * Tombolnya kembali sendiri begitu salah satu dari keduanya ditekan.
      */
     $("printDocument").hidden = editing;
+
+    /* Tanpa kertas tidak ada halaman yang bisa dilompati. */
+    $("pageNav").hidden = editing;
 
     $("editActions").hidden = !editing;
     $("editNote").hidden = !editing;
@@ -10302,42 +10304,6 @@ function setEditControls() {
      * kop tetap ada di rel pratinjau dan ikut diberi tanda "Terkunci".
      */
     $("kopLockHint").hidden = !editing;
-
-    /* Kendali jarak & pemisah halaman hanya berarti selama mode edit. */
-    $("layoutActions").hidden = !editing;
-}
-
-/*
- * Nama area teks saat mode edit menyala, mis. "Teks pilihan c soal 4".
- * Dibaca dari DOM, bukan ditulis saat render, supaya naskah biasa tidak
- * membawa atribut tambahan dan tetap dibacakan seperti sebelumnya.
- */
-function editLeafLabel(leaf) {
-    const block = leaf.closest(".question-block") || documentContainer;
-    const numberLeaf = block.querySelector('[data-edit="number"]');
-    const number = numberLeaf
-        ? cleanEditedText(numberLeaf.textContent).replace(/[.)]+$/, "")
-        : "";
-    const suffix = number ? " " + number : "";
-
-    if (leaf.dataset.edit === "number") {
-        return "Nomor soal" + suffix;
-    }
-
-    if (leaf.dataset.edit === "text") {
-        return "Teks soal" + suffix;
-    }
-
-    const labelLeaf = block.querySelector(
-        '[data-edit="optionLabel"][data-option="' + leaf.dataset.option + '"]'
-    );
-    const optionLabel = labelLeaf
-        ? cleanEditedText(labelLeaf.textContent).replace(/[.)]+$/, "").toLowerCase()
-        : "";
-    const option = optionLabel ? " pilihan " + optionLabel : "";
-
-    return (leaf.dataset.edit === "optionLabel" ? "Label" + option : "Teks" + option) +
-        " soal" + suffix;
 }
 
 function enterEditMode() {
@@ -10347,57 +10313,34 @@ function enterEditMode() {
 
     state.editing = true;
 
-    documentContainer.classList.add("is-editing");
-
-    Array.prototype.forEach.call(editLeaves(), leaf => {
-        leaf.setAttribute("contenteditable", "true");
-        leaf.setAttribute("spellcheck", "false");
-        leaf.setAttribute("aria-label", editLeafLabel(leaf));
-    });
-
     /*
-     * Judul bagian dipilih dengan klik, sedangkan ia tidak bisa difokuskan
-     * dengan sendirinya — tanpa tabindex, pengguna keyboard tidak punya cara
-     * lain untuk memindahkan satu bagian ke halaman berikutnya. Atributnya
-     * dilepas lagi saat mode edit ditutup, sama seperti contenteditable.
+     * Yang disunting adalah teks sumber apa adanya, bukan hasil serialisasi
+     * data soal: komentar atau penanda yang belum dikenal parser tidak boleh
+     * hilang hanya karena modenya dibuka.
      */
-    Array.prototype.forEach.call(
-        documentContainer.querySelectorAll(".section-row[data-section]"),
-        row => row.setAttribute("tabindex", "0")
-    );
+    editText.value = normalizeNewlines(currentSourceText());
 
-    /*
-     * Tombol jarak & halaman baru butuh sasaran. Blok pertama dipilih lebih
-     * dulu supaya tombolnya langsung berguna; klik berikutnya memindahkannya.
-     */
-    if (!editTarget) {
-        editTarget = firstEditTarget();
-    }
+    editStage.hidden = false;
+    documentContainer.hidden = true;
+    previewStage.setAttribute("aria-label", "Kotak teks naskah (mode edit)");
 
     setEditControls();
-    syncLayoutControls();
+    syncEditMode();
+
+    editText.focus();
 }
 
 /*
- * Keluar dari mode edit tanpa menyentuh data soal. Kelas dan atribut
- * contenteditable dilepas; isi DOM boleh dibuang sesudahnya oleh render ulang.
+ * Keluar dari mode edit tanpa menulis apa pun: kotak teksnya disembunyikan dan
+ * kertasnya kembali. Teks sumber belum tersentuh selama mode ini, jadi tidak
+ * ada yang perlu diparse ulang; halaman yang sudah tergambar masih benar.
  */
 function leaveEditMode() {
     state.editing = false;
-    editTarget = null;
 
-    documentContainer.classList.remove("is-editing");
-
-    Array.prototype.forEach.call(editLeaves(), leaf => {
-        leaf.removeAttribute("contenteditable");
-        leaf.removeAttribute("spellcheck");
-        leaf.removeAttribute("aria-label");
-    });
-
-    Array.prototype.forEach.call(
-        documentContainer.querySelectorAll(".section-row[tabindex]"),
-        row => row.removeAttribute("tabindex")
-    );
+    editStage.hidden = true;
+    documentContainer.hidden = false;
+    previewStage.setAttribute("aria-label", "Kanvas pratinjau dokumen");
 
     setEditControls();
 
@@ -10416,16 +10359,31 @@ function leaveEditMode() {
      * Yang dianggap kehilangan fokus bukan hanya `body`: peramban memindahkan
      * fokus ke `body` saat elemen yang difokuskan menjadi tidak dapat
      * difokuskan, tetapi perpindahan itu terjadi setelah gaya dan tata
-     * letaknya dihitung — jadi di sini fokusnya masih bisa menunjuk salah satu
-     * tombol yang baru saja disembunyikan. Keduanya diperiksa.
+     * letaknya dihitung — jadi di sini fokusnya masih bisa menunjuk kotak teks
+     * atau salah satu tombol yang baru saja disembunyikan. Ketiganya diperiksa.
      */
     const aktif = document.activeElement;
     const kehilanganFokus =
         !aktif ||
         aktif === document.body ||
-        (aktif instanceof HTMLElement && aktif.closest("#editActions, #layoutActions") !== null);
+        (aktif instanceof HTMLElement && aktif.closest("#editActions, #editStage") !== null);
 
-    if (kehilanganFokus && !tombolMode.hidden && !tombolMode.disabled) {
+    if (!kehilanganFokus) {
+        return;
+    }
+
+    /*
+     * Di layar sempit tombol mode edit duduk di dalam laci kendali, dan lacinya
+     * sudah tertutup lagi saat penyimpanan dipicu dari sana: memfokuskannya
+     * berarti melempar fokus ke elemen di luar layar. Pintunya (`#menuButton`)
+     * selalu tampak, jadi itu yang dipakai di sana.
+     */
+    if (window.matchMedia("(max-width: 900px)").matches) {
+        $("menuButton").focus();
+        return;
+    }
+
+    if (!tombolMode.hidden && !tombolMode.disabled) {
         tombolMode.focus();
     }
 }
@@ -10434,423 +10392,311 @@ function leaveEditMode() {
 /* =========================================================
    JARAK & HALAMAN BARU (mode edit)
 
-   Jarak atas dan pemisah halaman disimpan di data soal, jadi keduanya
-   bertahan sebagai penanda [ENTER]/[HALAMAN-BARU] di teks soal — bukan
-   sebagai hiasan pratinjau yang hilang begitu teksnya diparse ulang.
+   Sejak kertas diganti kotak teks, penanda tata letak disisipkan langsung ke
+   naskah pada blok tempat kursor berada: [ENTER], [ENTER: n], dan
+   [HALAMAN-BARU] ditulis di atas [SECTION]/[QUESTION] yang dituju, sama seperti
+   bentuk kanonik serializeSections(). Tidak ada lagi data soal yang diubah di
+   belakang layar; yang berubah hanya teks yang terlihat di kotak itu.
 ========================================================= */
 
-/*
- * Blok yang sedang disasar tombol: { section, question }. `question` bernilai
- * null bila yang disasar judul bagian. Disimpan sebagai indeks, bukan elemen,
- * karena halaman dibangun ulang setiap kali tata letaknya berubah.
- */
-let editTarget = null;
-
-/* Selektor daun yang terakhir disentuh kursor, untuk dipulihkan setelah render. */
-let editCaretSelector = "";
-
-/*
- * Saat kursor dipulihkan secara program, fokus yang muncul bukan pilihan
- * pengguna: kalau sasaran tombol ikut berpindah, blok yang sedang diatur
- * (mis. judul bagian) langsung tertukar dengan blok tempat kursor berada.
- */
-let restoringCaret = false;
-
-/* Selektor satu daun editable; dipakai untuk memulihkan posisi kursor. */
-function leafSelector(leaf) {
-    const block = leaf.closest(".question-block[data-section]");
-
-    if (!block) {
-        return "";
-    }
-
-    let selector =
-        '.question-block[data-section="' + block.dataset.section + '"]' +
-        '[data-question="' + block.dataset.question + '"] ' +
-        '[data-edit="' + leaf.dataset.edit + '"]';
-
-    if (leaf.dataset.option !== undefined) {
-        selector += '[data-option="' + leaf.dataset.option + '"]';
-    }
-
-    return selector;
+/* Baris naskah yang sedang disunting; semua hitungan di bawah memakainya. */
+function editTextLines() {
+    return editText.value.split("\n");
 }
 
-function restoreCaret(selector) {
-    if (!selector) {
-        return;
+/* Nomor baris (mulai nol) tempat kursor berada. */
+function caretLineIndex(lines) {
+    const caret = editText.selectionStart;
+    let index = 0;
+
+    for (let i = 0; i < caret && i < editText.value.length; i += 1) {
+        if (editText.value.charAt(i) === "\n") {
+            index += 1;
+        }
     }
 
-    const leaf = documentContainer.querySelector(selector);
+    return Math.min(index, lines.length - 1);
+}
 
-    if (!leaf) {
-        return;
+/*
+ * Deret penanda yang menempel pada satu blok: penanda tepat di atas
+ * [SECTION]/[QUESTION], dengan baris kosong di antaranya dilewati seperti di
+ * parser. Penanda yang jauh di atas blok lain tidak ikut ditarik, supaya
+ * tombol jarak tidak mengubah baris yang sedang tidak dilihat pengguna.
+ */
+function blockMarkerLines(lines, blockLine) {
+    const markers = [];
+
+    for (let i = blockLine - 1; i >= 0; i -= 1) {
+        if (!lines[i].trim()) {
+            continue;
+        }
+
+        if (!readLayoutMarker(lines[i])) {
+            break;
+        }
+
+        markers.unshift(i);
     }
 
-    restoringCaret = true;
+    return markers;
+}
 
-    try {
-        leaf.focus();
+/*
+ * Blok yang memuat kursor: soal atau judul bagian terdekat di atasnya. Bila
+ * kursor justru duduk di deret penanda sebuah blok (di antara penanda dan
+ * [QUESTION]-nya), blok itu yang dipilih, bukan blok sebelumnya.
+ */
+function editTargetBlock() {
+    const lines = editTextLines();
+    const caret = caretLineIndex(lines);
 
-        /* Kursor diletakkan di ujung teks, di tempat mengetik biasanya berlanjut. */
-        const selection = window.getSelection();
+    /** @type {{ kind: string, line: number } | null} */
+    let previous = null;
 
-        if (!selection) {
+    /** @type {{ kind: string, line: number } | null} */
+    let next = null;
+
+    /*
+     * Gelung biasa, bukan forEach: dengan callback, TypeScript menganggap
+     * `previous` dan `next` tidak pernah berubah dan menyempitkannya jadi
+     * `never` di bawah ini.
+     */
+    for (let index = 0; index < lines.length; index += 1) {
+        const upper = lines[index].trim().toUpperCase();
+
+        if (upper !== "[SECTION]" && upper !== "[QUESTION]") {
+            continue;
+        }
+
+        const block = { kind: upper === "[SECTION]" ? "section" : "question", line: index };
+
+        if (index <= caret) {
+            previous = block;
+        } else if (!next) {
+            next = block;
+        }
+    }
+
+    if (next) {
+        const above = lines.slice(caret, next.line);
+
+        if (above.every(line => !line.trim() || Boolean(readLayoutMarker(line)))) {
+            return next;
+        }
+    }
+
+    return previous;
+}
+
+/* Jarak atas dan pemisah halaman yang sedang berlaku pada satu blok. */
+function blockLayoutState(lines, block) {
+    const markers = blockMarkerLines(lines, block.line);
+    let space = 0;
+    let pageBreak = false;
+
+    markers.forEach(index => {
+        const layout = readLayoutMarker(lines[index]);
+
+        if (!layout) {
             return;
         }
 
-        const range = document.createRange();
+        if (layout.type === "page") {
+            pageBreak = true;
+            return;
+        }
 
-        range.selectNodeContents(leaf);
-        range.collapse(false);
+        space = Math.min(DOC_SPACE_MAX_LINES, space + layout.lines);
+    });
 
-        selection.removeAllRanges();
-        selection.addRange(range);
-    } finally {
-        restoringCaret = false;
-    }
+    return { markers: markers, space: space, pageBreak: pageBreak };
 }
 
-/* Blok di bawah satu elemen naskah dijadikan sasaran tombol tata letak. */
-function setEditTargetFromElement(element) {
-    if (!element || typeof element.closest !== "function") {
-        return;
+/* Nama blok untuk chip, dibaca dari baris pertama isinya. */
+function blockLabel(lines, block) {
+    for (let i = block.line + 1; i < lines.length; i += 1) {
+        const line = lines[i].trim();
+
+        if (!line || readLayoutMarker(line)) {
+            continue;
+        }
+
+        if (block.kind === "section") {
+            const label = line.replace(/[.)]+$/, "");
+
+            return label ? "Bagian " + label : "Judul bagian";
+        }
+
+        const number = line.match(/^(\d+)[.)]?$/);
+
+        return number ? "Soal " + number[1] : "Soal";
     }
 
-    const block = element.closest(".question-block[data-section]");
-
-    if (block) {
-        editTarget = {
-            section: Number(block.dataset.section),
-            question: Number(block.dataset.question)
-        };
-
-        syncLayoutControls();
-        return;
-    }
-
-    const row = element.closest(".section-row[data-section]");
-
-    if (row) {
-        editTarget = { section: Number(row.dataset.section), question: null };
-
-        syncLayoutControls();
-    }
-}
-
-/* Data soal di balik blok yang disasar. */
-function editTargetObject() {
-    if (!editTarget) {
-        return null;
-    }
-
-    const section = state.sections[editTarget.section];
-
-    if (!section) {
-        return null;
-    }
-
-    if (editTarget.question === null) {
-        return section;
-    }
-
-    return section.questions[editTarget.question] || null;
-}
-
-function editTargetLabel() {
-    if (!editTarget) {
-        return "Belum ada blok terpilih";
-    }
-
-    const section = state.sections[editTarget.section];
-
-    if (!section) {
-        return "Belum ada blok terpilih";
-    }
-
-    if (editTarget.question === null) {
-        const label = String(section.label || "").replace(/[.)]+$/, "");
-
-        return label ? "Bagian " + label : "Judul bagian";
-    }
-
-    const question = section.questions[editTarget.question];
-    const number = question ? String(question.number || "") : "";
-
-    return number ? "Soal " + number : "Soal";
-}
-
-/* Sasaran pertama yang masuk akal saat mode edit dibuka. */
-function firstEditTarget() {
-    if (!state.sections.length) {
-        return null;
-    }
-
-    return {
-        section: 0,
-        question: state.sections[0].questions.length ? 0 : null
-    };
-}
-
-/*
- * Blok yang menjadi sasaran tombol diberi tanda di naskahnya sendiri.
- * Nama blok di rel saja tidak cukup: rel duduk di kolom lain, sedangkan yang
- * sedang dilihat pengguna adalah kertasnya. Tandanya dipasang pada elemen
- * blok (baris bagian atau blok soal), dan hanya satu yang menyala — sasaran
- * lama dilepas lebih dulu supaya tidak ada dua blok yang tampak terpilih.
- */
-function markEditTarget() {
-    Array.prototype.forEach.call(
-        documentContainer.querySelectorAll(".is-edit-target"),
-        element => element.classList.remove("is-edit-target")
-    );
-
-    if (!editTarget) {
-        return;
-    }
-
-    const selector = editTarget.question === null
-        ? '.section-row[data-section="' + editTarget.section + '"]'
-        : '.question-block[data-section="' + editTarget.section + '"]' +
-          '[data-question="' + editTarget.question + '"]';
-
-    const block = documentContainer.querySelector(selector);
-
-    if (block) {
-        block.classList.add("is-edit-target");
-    }
+    return block.kind === "section" ? "Judul bagian" : "Soal";
 }
 
 function syncLayoutControls() {
-    const target = editTargetObject();
-    const lines = target ? Number(target.spaceBefore) || 0 : 0;
+    const lines = editTextLines();
+    const block = editTargetBlock();
+    const info = block ? blockLayoutState(lines, block) : null;
 
-    markEditTarget();
+    /*
+     * Nomor barisnya ikut disebut: di kotak teks, "soal 4" saja tidak
+     * menunjukkan baris mana yang akan bergeser.
+     */
+    $("layoutTarget").textContent = block && info
+        ? blockLabel(lines, block) + " · baris " + (block.line + 1)
+        : "Letakkan kursor di baris soal";
 
-    $("layoutTarget").textContent = editTargetLabel();
-    $("layoutRemove").disabled = !target || lines <= 0;
-    $("layoutAdd").disabled = !target || lines >= DOC_SPACE_MAX_LINES;
-    $("layoutBreak").disabled = !target;
+    $("layoutRemove").disabled = !info || info.space <= 0;
+    $("layoutAdd").disabled = !info || info.space >= DOC_SPACE_MAX_LINES;
+    $("layoutBreak").disabled = !info;
     $("layoutBreak").setAttribute(
         "aria-pressed",
-        target && target.pageBreakBefore ? "true" : "false"
+        info && info.pageBreak ? "true" : "false"
     );
 
-    if (!target) {
+    if (!info) {
         $("layoutState").textContent =
-            "Klik salah satu soal atau judul bagian untuk mengatur jaraknya.";
+            "Tombol jarak bekerja pada soal atau judul bagian tempat kursor berada.";
         return;
     }
 
     const parts = [
-        lines
-            ? "Jarak atas " + lines + " baris kosong."
+        info.space
+            ? "Jarak atas " + info.space + " baris kosong."
             : "Tanpa jarak tambahan."
     ];
 
-    if (target.pageBreakBefore) {
-        parts.push("Selalu dimulai di halaman baru.");
-    } else if (editTarget && editTarget.question === null) {
-        /*
-         * Judul bagian punya satu hal yang tidak dimiliki soal: ia beserta
-         * soal pertamanya bisa dipindah ke halaman berikutnya. Tombolnya
-         * berbunyi "Mulai halaman baru" tanpa menyebut bagian, jadi akibatnya
-         * ditulis di sini — muncul hanya saat bagian itu belum dipindahkan,
-         * bukan sebagai kalimat tetap yang lama-lama tidak dibaca.
-         */
-        parts.push("Klik Mulai halaman baru untuk menaruhnya di halaman berikutnya.");
+    if (info.pageBreak) {
+        parts.push("Akan dimulai di halaman baru.");
     }
 
     $("layoutState").textContent = parts.join(" ");
 }
 
-/* Menggeser jarak blok yang disasar; false berarti tidak ada yang berubah. */
-function nudgeBlockSpace(delta) {
-    const target = editTargetObject();
+/* Ringkasan naskah di bawah kotak teks: jumlah soal dan catatan formatnya. */
+function updateEditStatus() {
+    const text = editText.value;
 
-    if (!target) {
-        return false;
-    }
-
-    const before = Number(target.spaceBefore) || 0;
-    const after = Math.max(0, Math.min(DOC_SPACE_MAX_LINES, before + delta));
-
-    if (after === before) {
-        return false;
-    }
-
-    if (after > 0) {
-        target.spaceBefore = after;
-    } else {
-        /* Nol dihapus, bukan disimpan, supaya teks kanoniknya tetap bersih. */
-        delete target.spaceBefore;
-    }
-
-    return true;
-}
-
-function toggleBlockPageBreak() {
-    const target = editTargetObject();
-
-    if (!target) {
-        return false;
-    }
-
-    if (target.pageBreakBefore) {
-        delete target.pageBreakBefore;
-    } else {
-        target.pageBreakBefore = true;
-    }
-
-    return true;
-}
-
-/*
- * Ketikan yang belum disimpan hanya hidup di DOM — persis seperti sebelum ada
- * tombol tata letak. Karena halaman harus dibangun ulang agar jarak barunya
- * terlihat, isi daun dibaca lebih dulu lalu dipasang kembali ke halaman baru.
- * Dengan begitu tombol jarak tidak menghapus ketikan, dan juga tidak
- * menyimpannya diam-diam: yang menulis ke teks soal tetap hanya Simpan.
- */
-function readStagedEdits() {
-    const staged = [];
-
-    Array.prototype.forEach.call(
-        documentContainer.querySelectorAll("[data-edit]"),
-        leaf => {
-            const selector = leafSelector(leaf);
-
-            if (selector) {
-                staged.push([selector, leaf.textContent]);
-            }
-        }
-    );
-
-    return staged;
-}
-
-function writeStagedEdits(staged) {
-    staged.forEach(entry => {
-        const leaf = documentContainer.querySelector(entry[0]);
-
-        if (leaf) {
-            leaf.textContent = entry[1];
-        }
-    });
-}
-
-/*
- * Mengubah tata letak lalu menyusun ulang halaman tanpa keluar dari mode edit:
- * halaman digambar ulang dari data soal supaya bloknya benar-benar duduk di
- * posisi baru, lalu ketikan yang belum disimpan dipasang kembali dan kursor
- * diletakkan seperti sebelum tombolnya ditekan.
- */
-function applyLayoutChange(change) {
-    if (!state.editing || !editTargetObject()) {
+    if (!text.trim()) {
+        $("editStatus").textContent = "Belum ada teks soal.";
         return;
     }
 
-    if (!change()) {
-        syncLayoutControls();
+    const diagnosis = diagnose(text);
+    const parts = [diagnosis.questionCount + " soal · " + diagnosis.sectionCount + " bagian"];
+
+    if (diagnosis.errors.length) {
+        parts.push(diagnosis.errors.length + " catatan format, periksa di langkah 2");
+    } else if (diagnosis.warnings.length) {
+        parts.push(diagnosis.warnings.length + " peringatan");
+    }
+
+    $("editStatus").textContent = parts.join(" · ");
+}
+
+let editSyncTimer = null;
+
+/*
+ * Satu penunda untuk ringkasan dan sasaran tombol: keduanya membaca naskah
+ * yang panjang, dan keduanya hanya berubah setelah pengguna berhenti
+ * mengetik atau memindahkan kursornya sebentar.
+ */
+function scheduleEditSync() {
+    clearTimeout(editSyncTimer);
+    editSyncTimer = setTimeout(syncEditMode, 200);
+}
+
+function syncEditMode() {
+    updateEditStatus();
+    syncLayoutControls();
+}
+
+/* Menyisipkan/menghapus penanda jarak blok tempat kursor; tanpa sasaran: diam. */
+function nudgeEditSpace(delta) {
+    const lines = editTextLines();
+    const block = editTargetBlock();
+
+    if (!block) {
         return;
     }
 
-    const keep = editTarget;
-    const caret = editCaretSelector;
-    const staged = readStagedEdits();
+    const info = blockLayoutState(lines, block);
+    const space = Math.max(0, Math.min(DOC_SPACE_MAX_LINES, info.space + delta));
 
-    leaveEditMode();
+    if (space === info.space) {
+        return;
+    }
 
-    /* Render langsung: paginasinya harus final, bukan menunggu debounce. */
-    pendingRender = false;
-    renderDocument();
+    writeBlockMarkers(block, space, info.pageBreak);
+}
 
-    editTarget = keep;
-    enterEditMode();
+/* Menyalakan/mematikan [HALAMAN-BARU] pada blok tempat kursor. */
+function toggleEditPageBreak() {
+    const lines = editTextLines();
+    const block = editTargetBlock();
 
-    writeStagedEdits(staged);
-    restoreCaret(caret);
+    if (!block) {
+        return;
+    }
+
+    const info = blockLayoutState(lines, block);
+
+    writeBlockMarkers(block, info.space, !info.pageBreak);
 }
 
 /*
- * Membaca kembali daun yang sudah disunting lalu menuliskannya ke data soal.
- * Yang dibandingkan data soal, bukan snapshot DOM: kembali ke teks semula
- * berarti tidak ada perubahan, jadi tidak ada render ulang yang sia-sia.
+ * Menulis ulang deret penanda satu blok: penanda lama di deret itu dibuang
+ * lebih dulu, lalu satu penanda jarak kanonik dan satu [HALAMAN-BARU] dipasang
+ * tepat di atas [SECTION]/[QUESTION]-nya. Menekan tombol berulang kali karena
+ * itu menaikkan angkanya, bukan menumpuk [ENTER] yang dijumlahkan parser.
+ *
+ * Kursor ikut pindah ke ujung penanda yang baru: pengguna biasanya mengetik
+ * lagi setelah menekan tombolnya, dan membuang kursor ke tempat lain membuat
+ * lanjutan ketikannya jatuh di baris yang salah.
  */
-function collectPreviewEdits() {
-    let changed = false;
+function writeBlockMarkers(block, space, pageBreak) {
+    const lines = editTextLines();
+    const markers = blockMarkerLines(lines, block.line);
+    const kept = lines.filter((line, index) => markers.indexOf(index) < 0);
 
-    Array.prototype.forEach.call(
-        documentContainer.querySelectorAll(".question-block[data-section]"),
-        block => {
-            const section = state.sections[Number(block.dataset.section)];
-            const question = section
-                ? section.questions[Number(block.dataset.question)]
-                : null;
+    /* Baris blok digeser oleh penanda yang dibuang di atasnya. */
+    const removedAbove = markers.filter(index => index < block.line).length;
+    const insertAt = block.line - removedAbove;
+    const inserted = [];
 
-            if (!question) {
-                return;
-            }
+    if (space > 0) {
+        inserted.push(space > 1 ? "[ENTER: " + space + "]" : "[ENTER]");
+    }
 
-            const numberLeaf = block.querySelector('[data-edit="number"]');
-            const textLeaf = block.querySelector('[data-edit="text"]');
+    if (pageBreak) {
+        inserted.push("[HALAMAN-BARU]");
+    }
 
-            if (numberLeaf) {
-                /*
-                 * Titik setelah nomor milik naskah, bukan milik pengguna:
-                 * "7." dan "7" sama-sama disimpan sebagai "7" dan naskah
-                 * menambahkan titiknya kembali saat digambar.
-                 */
-                const number = cleanEditedText(numberLeaf.textContent).replace(/[.)]+$/, "");
+    kept.splice(insertAt, 0, ...inserted);
 
-                if (number !== question.number) {
-                    question.number = number;
-                    changed = true;
-                }
-            }
+    editText.value = kept.join("\n");
 
-            if (textLeaf) {
-                const text = cleanEditedText(textLeaf.textContent);
+    const caretLine = inserted.length ? insertAt + inserted.length - 1 : insertAt;
+    const offset = lineOffset(kept, inserted.length ? caretLine + 1 : caretLine);
 
-                if (text !== question.text) {
-                    question.text = text;
-                    changed = true;
-                }
-            }
+    editText.focus();
+    editText.setSelectionRange(offset, offset);
 
-            Array.prototype.forEach.call(
-                block.querySelectorAll('[data-edit="optionLabel"], [data-edit="optionText"]'),
-                leaf => {
-                    const option = question.options[Number(leaf.dataset.option)];
+    syncEditMode();
+}
 
-                    if (!option) {
-                        return;
-                    }
+/* Offset awal satu baris di dalam larik baris. */
+function lineOffset(lines, index) {
+    let offset = 0;
 
-                    const text = cleanEditedText(leaf.textContent);
+    for (let i = 0; i < index && i < lines.length; i += 1) {
+        offset += lines[i].length + 1;
+    }
 
-                    if (leaf.dataset.edit === "optionLabel") {
-                        /* Label dijaga tetap a–d, seperti yang dikenali parser. */
-                        const label = text.replace(/[.)]+$/, "").toLowerCase();
-
-                        if (/^[a-d]$/.test(label) && label !== option.label) {
-                            option.label = label;
-                            changed = true;
-                        }
-
-                        return;
-                    }
-
-                    if (text !== option.text) {
-                        option.text = text;
-                        changed = true;
-                    }
-                }
-            );
-        }
-    );
-
-    return changed;
+    return offset;
 }
 
 /*
@@ -10920,61 +10766,60 @@ function serializeSections(sections) {
 }
 
 /*
- * Menuliskan data soal ke teks sumber sebagai teks kanonik — termasuk penanda
- * [ENTER]/[HALAMAN-BARU]. Dipakai saat menyimpan editan.
+ * Menuliskan teks kotak edit ke sumber soal yang sedang aktif: isi kotak langkah
+ * 2 untuk sumber manual, teks berkas di memori untuk sumber berkas. Keduanya
+ * langsung diparse ulang lewat jalur yang sudah ada, jadi hasilnya sama dengan
+ * naskah yang diketik di langkah 2.
  */
-function writeEditsToSource(canonical) {
+function writeEditsToSource(text) {
     if (state.source === "manual") {
-        questionText.value = canonical;
+        questionText.value = text;
         syncManualSource();
         return;
     }
 
-    storeFileSource(canonical, sources.file.name);
+    storeFileSource(text, sources.file.name);
     applySource();
 }
 
 /*
- * Simpan editan: data soal diperbarui, teks sumber ditulis ulang kanonik,
- * lalu halaman disusun ulang. Setelah itu naskah di pratinjau, hasil cetak,
- * dan teks di langkah 2 memuat hal yang sama.
+ * Simpan editan: teks kotak edit ditulis ke sumber soal lalu diparse ulang,
+ * dan halaman disusun ulang dari hasil parse itu. Setelah itu naskah di
+ * pratinjau, hasil cetak, dan teks di langkah 2 memuat hal yang sama.
  */
 function savePreviewEdits() {
     if (!state.editing) {
         return;
     }
 
-    const changed = collectPreviewEdits();
+    const text = normalizeNewlines(editText.value).trim();
+    const source = normalizeNewlines(currentSourceText()).trim();
+
+    /*
+     * Naskah kosong hampir pasti kecelakaan: salah tekan Ctrl+A lalu mengetik,
+     * atau seluruh teks terhapus. Menyimpannya berarti menghapus semua soal,
+     * sedangkan jalan keluarnya cuma satu ketukan Batal. Jadi ditahan dulu.
+     */
+    if (!text) {
+        showSnackbar(
+            "Naskah kosong. Tulis soal dulu, atau tekan Batal untuk kembali tanpa mengubah naskah."
+        );
+        editText.focus();
+        return;
+    }
 
     /* Keluar dari mode lebih dulu: render hanya berjalan saat tidak mengedit. */
     leaveEditMode();
 
-    const canonical = serializeSections(state.sections);
-    const source = state.source === "manual" ? questionText.value : fileText;
+    pendingRender = false;
 
-    /*
-     * Penanda tata letak tidak dibaca collectPreviewEdits() — keduanya tidak
-     * punya wujud di DOM — jadi ada tidaknya perubahan dinilai dari teks
-     * kanonik: itulah bentuk yang diparse ulang setelah menyimpan.
-     */
-    if (!changed && canonical.trim() === String(source || "").trim()) {
-        /*
-         * Tidak ada yang berubah: tidak perlu menulis ulang teks, tapi render
-         * yang sempat tertunda tetap harus dilunasi.
-         */
-        if (pendingRender) {
-            pendingRender = false;
-            renderDocument();
-        } else {
-            updateDocStatus();
-        }
-
+    if (text === source) {
+        /* Tidak ada yang berubah: halaman lama masih benar, cukup dilunasi. */
+        renderDocument();
         return;
     }
 
-    writeEditsToSource(canonical);
-
-    pendingRender = false;
+    writeEditsToSource(text);
 
     /*
      * Render langsung, bukan lewat scheduleRender(): paginasi harus final di
@@ -10983,25 +10828,30 @@ function savePreviewEdits() {
      */
     renderDocument();
 
+    const diagnosis = diagnose(text);
+
+    /*
+     * Selama ini editan pratinjau tidak pernah bisa salah format. Sejak
+     * naskahnya diketik apa adanya, kesalahan penanda jadi mungkin, dan
+     * tempat melihat rinciannya tetap panel soal di langkah 2.
+     */
+    if (diagnosis.errors.length) {
+        showSnackbar(
+            "Editan tersimpan, tetapi ada " + diagnosis.errors.length +
+            " catatan format. Periksa panel soal di langkah 2."
+        );
+        return;
+    }
+
     showSnackbar("Editan tersimpan · halaman disusun ulang.");
 }
 
 /*
- * Mengembalikan data soal dari teks sumber yang belum tersentuh.
- * Selama mode edit, data soal memang sudah berubah (mis. penanda jarak baru),
- * sedangkan halaman dibangun ulang dari data itu — jadi hanya memparse ulang
- * teks sumber yang benar-benar membatalkan seluruh editan sesi ini.
+ * Batal: kotak teksnya dibuang dan teks sumber dibiarkan apa adanya. Tidak ada
+ * yang perlu diparse ulang, justru karena selama mode edit tidak ada satu pun
+ * tulisan yang masuk ke data soal; halaman yang masih tergambar memang masih
+ * mewakili teks sumber itu.
  */
-function reloadSourceSections() {
-    if (state.source === "manual") {
-        syncManualSource();
-        return;
-    }
-
-    storeFileSource(fileText, sources.file.name);
-    applySource();
-}
-
 function cancelPreviewEdits() {
     if (!state.editing) {
         return;
@@ -11011,49 +10861,9 @@ function cancelPreviewEdits() {
 
     pendingRender = false;
 
-    reloadSourceSections();
     renderDocument();
 
     showSnackbar("Editan dibatalkan · naskah kembali seperti semula.");
-}
-
-/*
- * Menempel teks polos saja: HTML atau gambar dari papan klip akan merusak sel
- * naskah, sedangkan yang dibaca balik saat menyimpan hanya textContent.
- */
-function insertPlainText(text) {
-    let inserted = false;
-
-    try {
-        /*
-         * execCommand sudah usang di spesifikasi, tapi masih satu-satunya
-         * jalur yang ikut menyimpan riwayat undo peramban.
-         */
-        inserted = document.execCommand("insertText", false, text);
-    } catch (error) {
-        inserted = false;
-    }
-
-    if (inserted) {
-        return;
-    }
-
-    const selection = window.getSelection();
-
-    if (!selection || !selection.rangeCount) {
-        return;
-    }
-
-    const range = selection.getRangeAt(0);
-    range.deleteContents();
-
-    const node = document.createTextNode(text);
-    range.insertNode(node);
-    range.setStartAfter(node);
-    range.collapse(true);
-
-    selection.removeAllRanges();
-    selection.addRange(range);
 }
 
 
@@ -11278,6 +11088,7 @@ function wireEvents() {
 
     $("sourceAi").addEventListener("click", function () {
         setSource("ai");
+        pasteAiResult.focus();
     });
 
     /* Margin kertas: preset dan nilai custom, keduanya di langkah Preview. */
@@ -11591,11 +11402,9 @@ function wireEvents() {
     /*
      * Escape di langkah Preview punya tiga sasaran, berurutan dari lapisan
      * paling atas: dialog modal, laci kendali layar sempit, lalu sesi edit.
-     * Yang terakhir ditangani di sini, bukan hanya di `#document`, sebab
-     * sejak kanvas bisa difokuskan (`tabindex` di #previewStage) fokus bisa
-     * berada di luar naskah — dan di sana Escape dulu tidak melakukan apa
-     * pun, padahal cancelPreviewEdits() adalah janji yang sama dengan tombol
-     * Batal.
+     * Sesi edit ditangani di sini supaya satu perintah berlaku dari mana pun
+     * fokusnya berada, termasuk dari dalam kotak teks naskah, sebab
+     * cancelPreviewEdits() adalah janji yang sama dengan tombol Batal.
      */
     document.addEventListener("keydown", function (event) {
         if (event.key !== "Escape") {
@@ -11618,10 +11427,9 @@ function wireEvents() {
         }
 
         /*
-         * Di dalam naskah, penangan `keydown` milik `#document` sudah
-         * menjalankannya lebih dulu (peristiwanya naik lewat sana), jadi
-         * `state.editing` di sini sudah bernilai false dan tidak ada yang
-         * dijalankan dua kali.
+         * Sampai di sini tidak ada lapisan di atas sesi edit, jadi Escape
+         * berarti membatalkannya. Kotak teks naskah tidak menangkap Escape
+         * sendiri, jadi peristiwanya sampai ke sini apa adanya.
          */
         if (state.editing) {
             cancelPreviewEdits();
@@ -11654,109 +11462,32 @@ function wireEvents() {
     $("saveEdits").addEventListener("click", savePreviewEdits);
     $("cancelEdits").addEventListener("click", cancelPreviewEdits);
 
-    /* Tata letak naskah: jarak atas dan pemisah halaman. */
+    /*
+     * Tata letak naskah: penanda jarak dan pemisah halaman disisipkan pada blok
+     * tempat kursor berada di kotak teks, bukan lagi pada blok yang diklik di
+     * kertas. Sasaran itu dibaca ulang setiap kali kursor berpindah.
+     */
     $("layoutRemove").addEventListener("click", function () {
-        applyLayoutChange(function () {
-            return nudgeBlockSpace(-1);
-        });
+        nudgeEditSpace(-1);
     });
 
     $("layoutAdd").addEventListener("click", function () {
-        applyLayoutChange(function () {
-            return nudgeBlockSpace(1);
-        });
+        nudgeEditSpace(1);
     });
 
-    $("layoutBreak").addEventListener("click", function () {
-        applyLayoutChange(toggleBlockPageBreak);
-    });
+    $("layoutBreak").addEventListener("click", toggleEditPageBreak);
 
     /*
-     * Sasaran tombol tata letak mengikuti blok yang disentuh: kursor di dalam
-     * soal, klik pada bagian naskah yang tidak bisa disunting (baris gambar,
-     * judul bagian), atau fokus keyboard yang mendarat di baris judul bagian
-     * (baris itu punya tabindex selama mode edit). Tanpa ini, sasarannya harus
-     * ditentukan rumus yang mudah salah; dengan ini yang tampak di layar
-     * itulah yang diatur.
+     * Ringkasan dan sasaran tombol mengikuti naskah di kotak edit: setiap
+     * ketikan dan setiap perpindahan kursor menandai perlunya hitung ulang.
+     * `selectionchange` di tingkat dokumen yang menangkap panah kiri/kanan
+     * maupun klik tetikus sekaligus.
      */
-    documentContainer.addEventListener("focusin", function (event) {
-        if (!state.editing || restoringCaret) {
-            return;
-        }
+    editText.addEventListener("input", scheduleEditSync);
 
-        /*
-         * event.target bertipe EventTarget, sedangkan .closest() hanya ada di
-         * Element. Penjaga instanceof ini mempersempitnya tanpa cast, sekaligus
-         * menutup kemungkinan targetnya null.
-         */
-        if (!(event.target instanceof HTMLElement)) {
-            return;
-        }
-
-        const leaf = event.target.closest("[data-edit]");
-
-        /*
-         * Selektor kursor hanya berarti untuk daun editable; baris judul
-         * bagian tidak menyimpan kursor. Keduanya tetap bisa menjadi sasaran.
-         */
-        if (leaf) {
-            editCaretSelector = leafSelector(leaf);
-        }
-
-        setEditTargetFromElement(event.target);
-    });
-
-    documentContainer.addEventListener("click", function (event) {
-        if (state.editing) {
-            setEditTargetFromElement(event.target);
-        }
-    });
-
-    /*
-     * Enter dimatikan di dalam naskah: semua daun editable satu baris, dan
-     * <br> hasil penyuntingan tidak ikut terbaca saat textContent diambil
-     * kembali ("abc" + <br> + "def" menjadi "abcdef"). Escape dan tempel teks
-     * juga diatur di sini supaya hanya ada satu tempat perilaku mode edit.
-     */
-    documentContainer.addEventListener("keydown", function (event) {
-        if (!state.editing) {
-            return;
-        }
-
-        if (event.key === "Enter") {
-            event.preventDefault();
-            return;
-        }
-
-        if (event.key === "Escape") {
-            event.preventDefault();
-            cancelPreviewEdits();
-        }
-    });
-
-    documentContainer.addEventListener("paste", function (event) {
-        if (!state.editing) {
-            return;
-        }
-
-        /*
-         * `window.clipboardData` adalah jalur cadangan lama yang tidak ada di
-         * DOM lib modern. Bentuknya dinyatakan apa adanya alih-alih di-`any`,
-         * supaya tetap terbaca sebagai cadangan usang, bukan sebagai lubang tipe.
-         */
-        const clipboard =
-            event.clipboardData ||
-            /** @type {{ clipboardData?: DataTransfer }} */ (window).clipboardData;
-
-        event.preventDefault();
-
-        insertPlainText(cleanEditedText(clipboard ? clipboard.getData("text/plain") : ""));
-    });
-
-    /* Menjatuhkan teks/gambar dari luar akan menyisipkan markup ke dalam sel. */
-    documentContainer.addEventListener("drop", function (event) {
-        if (state.editing) {
-            event.preventDefault();
+    document.addEventListener("selectionchange", function () {
+        if (state.editing && document.activeElement === editText) {
+            scheduleEditSync();
         }
     });
 
@@ -11769,17 +11500,13 @@ function wireEvents() {
     });
 
     /*
-     * Prompt AI: kerjakan langsung di situs AI, lalu lanjutkan menempelkan
+     * Prompt AI: kerjakan langsung di ChatGPT, lalu lanjutkan menempelkan
      * hasilnya. Tidak ada tombol salin/unduh tersendiri di sini karena
-     * promptnya memang dibawa tautan kedua tombol ini — lihat generateWithAi().
+     * promptnya memang dibawa tautan tombol ini, lihat generateWithAi().
      */
 
     $("generateChatGpt").addEventListener("click", function () {
         generateWithAi("chatgpt");
-    });
-
-    $("generateAiStudio").addEventListener("click", function () {
-        generateWithAi("aistudio");
     });
 
     $("pasteAiResult").addEventListener("click", function () {
@@ -11917,27 +11644,22 @@ function getAiPromptText() {
 }
 
 /*
- * Situs AI yang bisa dikerjakan langsung dari panel Prompt AI.
+ * Situs AI yang bisa dikerjakan langsung dari panel Prompt AI. Yang tersisa
+ * hanya ChatGPT (permintaan pengguna: tombol AI Studio dihapus).
  *
  * `query` adalah nama parameter URL yang menerima prompt di layanan itu. Isinya
  * hasil pengujian langsung di peramban, bukan dugaan:
- *   - ChatGPT  : ?q=...      → didukung layanan (dipakai tautan "ask ChatGPT").
- *   - AI Studio: ?prompt=... → kotak prompt benar-benar terisi (terukur).
+ *   - ChatGPT: ?q=... → didukung layanan (dipakai tautan "ask ChatGPT").
  *
  * Gemini sengaja TIDAK ada di daftar ini (permintaan pengguna: tombolnya
  * dihapus). Alasannya bukan selera: gemini.google.com tidak menerima prompt dari
  * tautan sama sekali — diuji di akun yang sudah masuk, `?q=` maupun `?prompt=`     * membuka composer yang tetap kosong, sehingga tombolnya hanya bisa membuka
  * situs lalu menyalin, dan perbuatan menyalin itu sekarang tidak ada lagi:
- * kedua tombol AI yang tersisa membawa promptnya di dalam tautan. Jangan
+ * satu-satunya tombol AI yang tersisa membawa promptnya di dalam tautan. Jangan
  * menambahkannya kembali tanpa parameter URL yang benar-benar mengisi kotaknya.
  */
 const AI_CHAT_TARGETS = {
-    chatgpt: { label: "ChatGPT", url: "https://chatgpt.com/", query: "q" },
-    aistudio: {
-        label: "AI Studio",
-        url: "https://aistudio.google.com/prompts/new_chat",
-        query: "prompt"
-    }
+    chatgpt: { label: "ChatGPT", url: "https://chatgpt.com/", query: "q" }
 };
 
 /*
@@ -11979,8 +11701,10 @@ function encodeUrlValue(text) {
 }
 
 /*
- * Batas panjang URL, diukur satu per satu di peramban (aistudio.google.com),
- * bukan diperkirakan.
+ * Batas panjang URL, diukur satu per satu di peramban (aistudio.google.com,
+ * saat sasaran itu masih ada), bukan diperkirakan. Batas chatgpt.com sendiri
+ * belum pernah diukur, jadi angka hasil ukuran itu dipertahankan apa adanya
+ * sebagai plafon bersama; menaikkannya menuntut pengukuran baru lebih dulu.
  *
  * Promptnya 13.843 karakter. Hasil tiap bentuk, panjang URL yang benar-benar
  * dikirim, dan yang terjadi:
@@ -12068,9 +11792,9 @@ async function generateWithAi(key) {
      * Sampai di sini promptnya tidak ikut di tautan, dan ada dua sebab yang
      * masing-masing diberi kalimatnya sendiri: promptnya melebihi
      * AI_URL_MAX_CHARS, atau layanannya memang tidak punya parameter prompt.
-     * Cabang kedua tidak terpakai sekarang karena semua sasaran punya `query` —
-     * tapi ia tetap ditulis supaya sasaran tanpa dukungan tautan, seperti Gemini
-     * dulu, tidak diberi alasan yang salah.
+     * Cabang kedua tidak terpakai sekarang karena sasaran yang tersisa punya
+     * `query`, tapi ia tetap ditulis supaya sasaran tanpa dukungan tautan,
+     * seperti Gemini dulu, tidak diberi alasan yang salah.
      *
      * Yang disebut "tempel dengan Ctrl + V" di sini adalah promptnya, bukan
      * hasilnya: papan klip dipakai untuk memasukkan prompt ke kotak pesan AI,
