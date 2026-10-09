@@ -3363,9 +3363,27 @@ input[type="file"] {
         grid-template-columns: minmax(0, 1fr);
     }
 
+    /*
+     * Kanvas tidak boleh mengunci gesturnya sendiri. Sejak Chrome 144,
+     * `overscroll-behavior: contain` juga berlaku pada wadah gulir yang tidak
+     * punya luapan lebih dari nol piksel — dan itulah keadaan kanvas di layar
+     * sempit: zoom "Sesuaikan lebar" memasukkan kertas A4 ke dalamnya, jadi
+     * kanvas tidak punya gulir sendiri. Dengan `contain` dari aturan dasarnya,
+     * usapan maupun roda yang mendarat di atas kertas berhenti di kanvas,
+     * sedangkan di layar sempit halaman inilah penggulirnya (lihat catatan roda
+     * di bagian gulir kanvas; permintaan pengguna: usapan di atas kertas harus
+     * bisa menggulir di mode mobile). `auto` mengembalikan rantai gulir itu
+     * tanpa mengubah tata letak lebar, yang kanvasnya memang punya gulir sendiri
+     * dan tetap memakai `contain` dari aturan dasar.
+     *
+     * Terukur di Chrome 154, jendela 390x844, kanvas 893 px tanpa luapan:
+     * usapan 260 px di atas kertas — `contain` memindahkan 0 px, `auto` 332 px;
+     * roda 300 px — `contain` 0 px, `auto` 300 px.
+     */
     .md-preview-stage {
         max-height: none;
         min-height: 0;
+        overscroll-behavior: auto;
     }
 
     /*
@@ -4250,6 +4268,16 @@ input[type="file"] {
                                             <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-upload"/></svg>
                                             <span>Pilih Logo</span>
                                         </button>
+                                        <!--
+                                            Kembali ke logo bawaan setelah diganti
+                                            atau dihapus; memakai jalur tautan yang
+                                            sama dengan tombol Muat (lihat
+                                            loadLogoFromUrl()).
+                                        -->
+                                        <button type="button" class="md-button md-button--text md-button--with-icon" id="setDefaultLogoButton">
+                                            <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-image"/></svg>
+                                            <span>Logo bawaan</span>
+                                        </button>
                                         <button type="button" class="md-button md-button--text md-button--error md-button--with-icon" id="removeLogo" hidden>
                                             <svg class="md-icon md-icon--18" aria-hidden="true"><use href="#i-trash"/></svg>
                                             <span>Hapus</span>
@@ -5062,17 +5090,19 @@ Tunggu jawaban pengguna.
 
 ### Pertanyaan 3
 
-Tanyakan sub bab dengan menyebut nama babnya lebih dulu:
+Siapkan **minimal 5 rekomendasi sub bab** dari bab yang baru dijawab, lalu tanyakan sub bab dengan menyebut nama babnya dan menampilkan rekomendasi bernomor:
 
-> Pada bab yang baru saja dijawab, sub bab apa saja yang akan digunakan? Jika lebih dari satu, pisahkan dengan koma (,).
+> Pada bab yang baru saja dijawab, sub bab apa saja yang akan digunakan? Berikut minimal 5 rekomendasi saya: balas dengan nomor atau ketik sendiri. Jika lebih dari satu, pisahkan dengan koma (,).
 
 Tunggu jawaban pengguna.
 
 Sub bab **wajib mengikuti bab yang sudah diinput**:
 
+- Rekomendasi wajib **minimal 5 butir**, semua di dalam bab itu, tampil sebelum pengguna menjawab.
+- Jawaban nomor ditukar dengan nama sub babnya sebelum dipakai.
 - Sebut kembali babnya di dalam pertanyaan.
 - Bila sub babnya di luar bab, tanyakan sekali: tetap dipakai atau diganti sub bab lain di dalam bab itu?
-- Bila bab diubah pada tahap EDIT (bagian 4), tanyakan kembali sub babnya.
+- Bila bab diubah pada tahap EDIT (bagian 4), tanyakan kembali sub babnya dengan 5 rekomendasi baru.
 - Jangan menambah sub bab yang tidak disebut pengguna.
 
 ### Pertanyaan 4
@@ -5159,7 +5189,7 @@ Periksa:
 
 1. Mata pelajaran tersedia.
 2. Bab/materi utama tersedia.
-3. Sub bab tersedia.
+3. Sub bab tersedia dan sudah ditawarkan minimal 5 rekomendasi lebih dulu.
 4. Setiap sub bab berada di dalam bab yang sudah diinput.
 5. Bila bab berubah, sub bab sudah ditinjau ulang agar ikut bab yang baru.
 6. Kelas/jenjang tersedia.
@@ -5231,7 +5261,7 @@ Contoh:
 
 > Jumlah pilihan ganda menjadi 25 dan HOTS menjadi 30%.
 
-Bila **bab** diubah, tanyakan kembali sub babnya agar ikut bab yang baru.
+Bila **bab** diubah, tanyakan kembali sub babnya dengan 5 rekomendasi baru agar ikut bab yang baru.
 
 Perbarui data.
 
@@ -6146,6 +6176,13 @@ function defaultAcademicYear(date = new Date()) {
    STATE
 ========================================================= */
 
+/*
+ * Logo bawaan kop: dipasang ke state sejak berkas ini dievaluasi supaya halaman
+ * pertama langsung berlogo tanpa unggahan apa pun. Tautannya butuh internet saat
+ * membuka dan mencetak — sama seperti tautan logo lain yang ditempel pengguna.
+ */
+const DEFAULT_LOGO_URL = "https://raw.githubusercontent.com/suuf24/jadwal-pengawas-asas/refs/heads/main/logo-sekolah.png";
+
 /** @type {AppState} */
 const state = {
     step: 1,
@@ -6174,7 +6211,7 @@ const state = {
      */
     editing: false,
     settings: {
-        logo: "",
+        logo: DEFAULT_LOGO_URL,
         title: "ASESMEN SUMATIF AKHIR SEMESTER (ASAS)",
         schoolName: "MI PLUS DARUL FALAH GAMBIRAN MOJOAGUNG JOMBANG",
         academicYear: defaultAcademicYear(),
@@ -10041,7 +10078,9 @@ function scrollToPage(number) {
    halaman di belakangnya memang tidak bisa menggulir: panel pratinjau dipagari
    setinggi jendela dan `overflow: hidden`. Di layar sempit tidak ada yang
    diteruskan — kanvasnya di sana memang tidak punya gulir sendiri, jadi
-   seluruh halaman yang menggulir, seperti sebelumnya.
+   seluruh halaman yang menggulir, seperti sebelumnya. Gantungannya satu aturan
+   CSS: `overscroll-behavior: auto` pada kanvas di blok layar sempit, sebab
+   `contain` bawaan aturan dasar mengunci rantai gulir itu sejak Chrome 144.
 ========================================================= */
 
 /* Satu "baris" roda yang datang sebagai satuan baris (`deltaMode` 1). */
@@ -11725,6 +11764,10 @@ function wireEvents() {
     $("copyTemplate").addEventListener("click", copyTemplate);
     $("downloadTemplate").addEventListener("click", downloadTemplate);
 
+    $("setDefaultLogoButton").addEventListener("click", function () {
+        loadLogoFromUrl(DEFAULT_LOGO_URL);
+    });
+
     /*
      * Prompt AI: kerjakan langsung di situs AI, lalu lanjutkan menempelkan
      * hasilnya. Tidak ada tombol salin/unduh tersendiri di sini karena
@@ -11802,6 +11845,16 @@ function wireEvents() {
     $("kopStyle").addEventListener("change", function () {
         setKopStyle(this.value);
     });
+}
+
+/*
+ * Logo bawaan: memasang tautan logo bawaan ke pratinjau kartu dan ke isian
+ * tautan lewat jalur yang sama dengan tautan yang ditempel pengguna. Tanpa
+ * snackbar, sebab pemasangan ini terjadi sendiri saat aplikasi dibuka.
+ */
+function loadDefaultLogo() {
+    $("logoUrl").value = DEFAULT_LOGO_URL;
+    showLogoPreview(DEFAULT_LOGO_URL);
 }
 
 
@@ -11939,6 +11992,10 @@ function encodeUrlValue(text) {
  * Jadi batas layanannya ada di antara 18.052 dan 19.351, dan yang menyelamatkan
  * tautan ini bukan "hampir cukup pendek" melainkan tiga ribu karakter yang
  * dihemat oleh `+`.
+ *
+ * CATATAN: prompt terus bertambah sejak pengukuran itu, dan ruang tersisa kini
+ * tinggal puluhan karakter. Ukur ulang dengan encoder yang sama setiap kali
+ * prompt diubah — di atas 18.000 tautannya batal dan promptnya hanya disalin.
  *
  * PERINGATAN pengukuran: `location.href` **menampilkan** `+` sebagai `%20`, jadi
  * membaca panjangnya setelah navigasi memberi angka 19.369 untuk tautan yang
@@ -12337,6 +12394,13 @@ function wireAppIcon() {
     setKopStyle(state.settings.kopStyle, { silent: true });
 
     wireEvents();
+
+    /*
+     * Logo bawaan dipasang setelah wireEvents(): kartu logo dan isian tautannya
+     * sudah berdiri, jadi pratinjau langsung menunjukkan logo yang akan tercetak
+     * tanpa snackbar saat aplikasi dibuka.
+     */
+    loadDefaultLogo();
 
     /*
      * Panggilan pertama menyiapkan sumber soal dan statusnya seperti sebelumnya,
